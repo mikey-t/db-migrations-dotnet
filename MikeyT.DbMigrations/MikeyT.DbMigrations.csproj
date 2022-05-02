@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageVersion>0.1.0-alpha</PackageVersion>
+    <Title>MikeyT.DbMigrations</Title>
+    <Authors>Michael Thompson</Authors>
+    <Description>Dotnet DB migrations library utilizing Entity Framework and plain SQL files.</Description>
+    <Copyright>2022 Michael Thompson</Copyright>
+    <PackageProjectUrl>https://github.com/mikey-t/db-migrations-dotnet</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/mikey-t/db-migrations-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dotnet;db-migrations</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.4" />
+    <PackageReference Include="MikeyT.EnvironmentSettings" Version="0.2.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
+      <Pack>true</Pack>
+      <PackagePath />
+    </None>
+  </ItemGroup>
+
+</Project>

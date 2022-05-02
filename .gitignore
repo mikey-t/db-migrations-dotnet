@@ -1,0 +1,8 @@
+.idea
+db-migrations-dotnet.sln.DotSettings.user
+**/bin
+**/obj
+**/publish
+**/build
+node_modules
+.env

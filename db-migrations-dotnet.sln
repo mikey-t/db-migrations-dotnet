@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikeyT.DbMigrations", "MikeyT.DbMigrations\MikeyT.DbMigrations.csproj", "{E481B798-8611-4D71-AA78-D515D360347C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{EC2CA57A-DB35-4BC9-8B07-D45502F581C3}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		package.json = package.json
+		gulpfile.js = gulpfile.js
+		.env = .env
+		.env.template = .env.template
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E481B798-8611-4D71-AA78-D515D360347C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E481B798-8611-4D71-AA78-D515D360347C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E481B798-8611-4D71-AA78-D515D360347C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E481B798-8611-4D71-AA78-D515D360347C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

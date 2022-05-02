@@ -1,0 +1,16 @@
+{
+  "name": "db-migrations-dotnet",
+  "version": "0.0.1",
+  "description": "Helper commands for creating the MikeyT.DbMigrations NuGet package and managing a sample project that consumes MikeyT.DbMigrations",
+  "scripts": {
+    "packOnly": "gulp pack",
+    "publish": "gulp publish"
+  },
+  "author": "Michael Thompson",
+  "license": "MIT",
+  "devDependencies": {
+    "@mikeyt23/node-cli-utils": "^1.2.5",
+    "dotenv": "^16.0.0",
+    "gulp": "^4.0.2"
+  }
+}
