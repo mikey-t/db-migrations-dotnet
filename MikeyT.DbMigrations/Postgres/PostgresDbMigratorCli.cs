@@ -5,7 +5,7 @@ namespace MikeyT.DbMigrations.Postgres;
 
 public class PostgresDbMigratorCli
 {
-    public async Task<int> Run(string[] args, DbContext mainDbContext)
+    public async Task<int> Run(string[] args, DbContext dbContextForPackagedDbMigrate)
     {
         try
         {
@@ -35,7 +35,7 @@ public class PostgresDbMigratorCli
                     return 0;
                 case "dbMigrate":
                     Console.WriteLine("Running dbMigrate");
-                    await logic.DbMigrate(mainDbContext);
+                    await logic.DbMigrate(dbContextForPackagedDbMigrate);
                     Console.WriteLine("Finished dbMigrate");
                     return 0;
                 default:

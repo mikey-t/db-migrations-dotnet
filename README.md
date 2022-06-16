@@ -33,7 +33,7 @@ Most of the code in this project is just example stuff you probably don't need o
 
 ## What extra stuff is in this example project?
 
-Most of the extra fluff in this example project falls in one of these categories:
+Most of the extra fluff in the example project falls in one of these categories:
 - Gather up environment variables to be used to create a DB connection string
 - Convenience console app script commands to create the initial DB or drop it on a developer machine
 - Code to read in SQL files from a common location and process/replace any script placeholders
