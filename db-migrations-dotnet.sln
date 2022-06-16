@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikeyT.DbMigrations", "MikeyT.DbMigrations\MikeyT.DbMigrations.csproj", "{E481B798-8611-4D71-AA78-D515D360347C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{EC2CA57A-DB35-4BC9-8B07-D45502F581C3}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
@@ -15,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.env = .env
 		.env.template = .env.template
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{334F26D1-08CA-44E3-9687-8C5F2C4D8FC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikeyT.DbMigrations", "src\MikeyT.DbMigrations\MikeyT.DbMigrations.csproj", "{13AC523A-149D-40DE-AC07-8EEB6051574C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,5 +31,12 @@ Global
 		{E481B798-8611-4D71-AA78-D515D360347C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E481B798-8611-4D71-AA78-D515D360347C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E481B798-8611-4D71-AA78-D515D360347C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13AC523A-149D-40DE-AC07-8EEB6051574C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13AC523A-149D-40DE-AC07-8EEB6051574C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13AC523A-149D-40DE-AC07-8EEB6051574C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13AC523A-149D-40DE-AC07-8EEB6051574C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{13AC523A-149D-40DE-AC07-8EEB6051574C} = {334F26D1-08CA-44E3-9687-8C5F2C4D8FC6}
 	EndGlobalSection
 EndGlobal

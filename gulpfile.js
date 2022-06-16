@@ -6,7 +6,7 @@ const path = require('path')
 require('dotenv').config()
 
 const ns = 'MikeyT.DbMigrations'
-const projPath = `./${ns}`
+const projPath = `./src/${ns}`
 const packageDir = path.join(projPath, 'bin/Debug')
 
 async function pack() {
