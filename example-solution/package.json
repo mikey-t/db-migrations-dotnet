@@ -17,10 +17,11 @@
     "dbInitialCreate": "gulp dbInitialCreate",
     "dbDropAll": "gulp dbDropAll",
     "dbDropAndRecreate": "gulp dbDropAndRecreate",
+
+    "dbMigrationsList": "gulp dbMigrationsList",
     "dbMigrate": "gulp dbMigrate",
     "dbAddMigration": "gulp dbAddMigration",
     "dbRemoveMigration": "gulp dbRemoveMigration",
-    "dbMigrationsList": "gulp dbMigrationsList",
     
     "cleanNameFiles": "gulp cleanNameFiles"
   },
