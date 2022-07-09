@@ -22,7 +22,7 @@ The goal of this project is to demonstrate that there are alternatives to hitchi
 
 ## What is the shortest path to implementing this?
 
-Most of the code in this project is just example stuff you probably don't need or want. At a minimum, you need:
+Most of the code in this project is just example stuff you may or may not need or want. At a minimum, you need:
 
 - A project that includes references to:
   - Microsoft.EntityFrameworkCore

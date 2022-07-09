@@ -1,9 +1,10 @@
 **/.env
 .idea
 node_modules
-db-migrations-dotnet.sln.DotSettings.user
+example-solution.sln.DotSettings.user
 **/bin
 **/obj
 **/publish
 **/build
 release/**
+docker/pg/**
