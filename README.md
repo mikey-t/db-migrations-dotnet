@@ -140,6 +140,20 @@ If you're working on script automation for setting up the DB, you might want to 
 </tbody>
 </table>
 
+## Diagrams
+
+Package.json and gulpfile example usage.
+![db-migrations-dotnet Basic package.json and gulpfile usage](./docs/db-migrations-dotnet-basic-gulpfile.drawio.png "db-migrations-dotnet basic package.json and gulpfile usage")
+
+Sample console app to contain auto-generated c# scripts in addition to manually created corresponding sql scripts.
+![db-migrations-dotnet console app](./docs/db-migrations-dotnet-console-app.drawio.png "db-migrations-dotnet console app")
+
+Sample usage of console app to run arbitrary custom work. In this case, creating the initial DB instance and DB user.
+![db-migrations-dotnet console app example usage](./docs/db-migrations-dotnet-console-app-example.drawio.png "db-migrations-dotnet console app example usage")
+
+Abstract steps for deployment of DB changes. When the console app receives the `dbMigrate` command, it simply instantiates the DbContext object and runs `await dbContext.Database.MigrateAsync();`.
+![db-migrations-dotnet console app packaging and deployment](./docs/db-migrations-dotnet-package-and-deploy.drawio.png "db-migrations-dotnet console app packaging and deployment")
+
 ## Example steps for setting up a new project
 
 - Create solution with `dotnet new sln -o example-solution`
