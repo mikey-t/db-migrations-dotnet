@@ -4,25 +4,23 @@ This is a NuGet package and sample solution that show how to manage DB migration
 
 You could extend this concept into a small framework, or just copy and paste a few lines from this example into your own project. The point is that you can get DB migrations without being forced into using EF for data access and without using a heavy opinionated DB migrations framework.
 
-## NuGet package info
-
-The NuGet package contained in this project (MikeyT.DbMigrations) is not in a production ready state. Use at your own risk.
-
 ## What do we need out of a DB migration tool?
 
 At the most basic level, a DB migration framework should really just be responsible for keeping track of what scripts have run and provide simple commands to roll forward or back to a particular migration.
 
-## Why?
+## Why create this project?
 
-There are a number of full-featured DB migration frameworks and libraries out there. Most of the time it's probably wise to go with one of these solutions. However, there may be factors that might lead you to make a different choice in some circumstances.
+There are a number of full-featured DB migration frameworks and libraries out there. Some of them are great. Some of them cause more problems then they solve.
 
-Here are some opinions on why choosing a large framework for DB migrations might not always be the best option:
+Here are some reasons you might not want a framework or library for DB migrations:
 
 - Using a DB migration framework might add unnecessary complexity to your project
-- Most DB migration frameworks are highly opinionated about how you treat DB management. The moment you need something they don't agree with, you're looking at a large effort to create a workaround, or you may end up ejecting from their solution completely, wasting valuable time. 
-- DB frameworks advertise that they've created the ability to manipulate SQL in your favorite non-SQL programming language. My experience is that the best language for SQL is usually... SQL. Using your favorite programming language to manipulate SQL seems cool, but risks ending up as a novelty that costs more time than it saves.
+- Most DB migration frameworks are highly opinionated about how you treat DB management. The moment you need something they don't agree with, you're looking at a large effort to create a workaround, or you may end up ejecting from their solution completely, wasting valuable time.
+- Bugs or missing features in an open source project might be difficult to get addressed in a reasonable amount of time
+- Increased onboarding time for new developers on the project
+- DB frameworks advertise that they've created the ability to manipulate SQL in your favorite non-SQL programming language. My experience is that the best language for SQL is usually... SQL. Using your favorite programming language to manipulate SQL seems cool, but might sometimes just be a novelty that costs more time than it saves.
 
-The goal of this project is to demonstrate that there are alternatives to hitching up with a big opinionated DB migration framework or creating an entire framework of your own. Instead we can leverage some existing tools (dotnet ef) and the tried and tested plain SQL scripts that won't fail because of an intermediary translation layer failure.
+The goal of this project is to demonstrate that we can get basic DB migration functionality without a third party framework. We can leverage some existing tools (dotnet ef) and the tried and tested plain SQL scripts that won't fail because of an intermediary translation layer failure.
 
 ## What is the shortest path to implementing this?
 
@@ -37,15 +35,17 @@ Most of the code in this project is just example stuff you may or may not need o
 
 ## What extra stuff is in this example project?
 
-Most of the extra fluff in the example project falls in one of these categories:
+Most of the extra stuff in the example project falls in one of these categories:
 - Gather up environment variables to be used to create a DB connection string
 - Convenience console app script commands to create the initial DB or drop it on a developer machine
 - Code to read in SQL files from a common location and process/replace any script placeholders
-- Add convenience scripts to build and package a console app that can be used to migrate DBs in non-dev environments
+- Convenience scripts to build and package a console app that can be used to migrate DBs in non-dev environments
 
-Most projects/teams are going to have specific requirements and preferences when it comes to environments and deployments, so much of this extra example code may or my not be relevant to your particular situation. The key here is that you can take just the dotnet ef tool use and plain SQL scripts and use your team's other custom processes. Flexibility is the name of the game here.
+Most projects/teams are going to have specific requirements and preferences when it comes to environments, deployments and automation/scripting, so much of this extra example code may or my not be relevant to your particular situation. The key here is that you can take just the dotnet ef tool use and plain SQL scripts and use your team's other custom processes. Flexibility is the name of the game here.
 
 ## Common developer DB related tasks
+
+Below are the wrapper package.json commands you would run if setting up your project like the included example-solution.
 
 <table>
 <thead>
@@ -143,7 +143,7 @@ If you're working on script automation for setting up the DB, you might want to 
 ## Diagrams
 
 Package.json and gulpfile example usage.
-![db-migrations-dotnet Basic package.json and gulpfile usage](./docs/db-migrations-dotnet-basic-gulpfile.drawio.png "db-migrations-dotnet basic package.json and gulpfile usage")
+![db-migrations-dotnet Basic package.json and gulpfile usage](./docs/db-migrations-dotnet-basic-gulpfile-usage.drawio.png "db-migrations-dotnet basic package.json and gulpfile usage")
 
 Sample console app to contain auto-generated c# scripts in addition to manually created corresponding sql scripts.
 ![db-migrations-dotnet console app](./docs/db-migrations-dotnet-console-app.drawio.png "db-migrations-dotnet console app")
@@ -154,43 +154,8 @@ Sample usage of console app to run arbitrary custom work. In this case, creating
 Abstract steps for deployment of DB changes. When the console app receives the `dbMigrate` command, it simply instantiates the DbContext object and runs `await dbContext.Database.MigrateAsync();`.
 ![db-migrations-dotnet console app packaging and deployment](./docs/db-migrations-dotnet-package-and-deploy.drawio.png "db-migrations-dotnet console app packaging and deployment")
 
-## Example steps for setting up a new project
+## Other docs
 
-- Create solution with `dotnet new sln -o example-solution`
-- `cd example-solution`
-- `mkdir src`
-- `cd src`
-- `dotnet new webapi -o ExampleApi`
-- `dotnet new console -o DbMigrator`
-- `cd ..`
-- `dotnet sln add src/ExampleApi/ExampleApi.csproj`
-- `dotnet sln add src/DbMigrator/DbMigrator.csproj`
-- Add NuGet dependencies to ExampleApi
-  - Dapper
-  - Npgsql
-  - MikeyT.EnvironmentSettings
-- Add NuGet dependencies to DbMigrator
-  - Microsoft.EntityFrameworkCore.Design
-  - Npgsql
-  - MikeyT.DbMigrations
-  - MikeyT.EnvironmentSettings
-- In DbMigrator, add MainDbContext class (see example project)
-- In DbMigrator `Program.cs`, add one-liner (see example project)
-- Create or copy over `package.json`/`gulpfile.js` commands/tasks (see example project)
-- Create or copy over `.env.template`
-- Copy `.env.template` to `.env` and modify values to whatever is appropriate
-- Run `npm run dockerUp`
-- Run `npm run dbInitialCreate`
-- Create initial DB migration with `npm run dbAddMigration -- --name=Initial`
-- Run `npm run dbMigrate`
-- Create new migration for test model with `npm run dbAddMigration -- --name=AddPerson`
-- Create `Scripts` directory in root of console DbMigrator app and populate with blank `AddPerson.sql` and `AddPerson_Down.sql` files
-  - Set scripts directory as content to be copied to bin using entry in DbMigrator.csproj (see example project .csproj)
-- Fill in add table statement in `AddPerson.sql` and drop in `AddPerson_Down.sql` (see example project)
-- In auto-generated `[date]_AddPerson.cs` methods, add call to extension method:
-  - In `Up()` use the example line `MigrationScriptRunner.RunScript(migrationBuilder, "AddPerson.sql");`
-  - In `Down()` use the example line `MigrationScriptRunner.RunScript(migrationBuilder, "AddPerson_Down.sql");`
-- Run `npm run dbMigrate`
-- Add data access and controller code (see example project)
-- Add environment settings and dependency injection setup to ExampleApi project `Program.cs` (see example project)
-- Run `npm run api` (alias for `dotnet watch` pointing to the api project)
+- [Example New Setup](./docs/ExampleNewSetup.md)
+
+
