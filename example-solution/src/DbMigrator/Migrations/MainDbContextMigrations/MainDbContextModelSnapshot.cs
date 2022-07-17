@@ -2,19 +2,17 @@
 using DbMigrator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DbMigrator.Migrations.Main
+namespace DbMigrator.Migrations.MainDbContextMigrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20220708194020_AddPerson")]
-    partial class AddPerson
+    partial class MainDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

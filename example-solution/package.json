@@ -23,12 +23,13 @@
     "dbAddMigration": "gulp dbAddMigration",
     "dbRemoveMigration": "gulp dbRemoveMigration",
     
-    "cleanNameFiles": "gulp cleanNameFiles"
+    "cleanNameFiles": "gulp cleanNameFiles",
+    "packageDbMigrator": "gulp packageDbMigrator"
   },
   "author": "Michael Thompson",
   "license": "MIT",
   "dependencies": {
-    "@mikeyt23/node-cli-utils": "^1.2.6",
+    "@mikeyt23/node-cli-utils": "^1.3.0",
     "fs-extra": "^10.1.0",
     "gulp": "^4.0.2",
     "yargs": "^17.5.1"

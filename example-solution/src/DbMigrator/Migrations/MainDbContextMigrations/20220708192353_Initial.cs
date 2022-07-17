@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace DbMigrator.Migrations.Main
+namespace DbMigrator.Migrations.MainDbContextMigrations
 {
     public partial class Initial : Migration
     {

@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DbMigrator.Migrations.Main
+namespace DbMigrator.Migrations.MainDbContextMigrations
 {
     [DbContext(typeof(MainDbContext))]
     [Migration("20220708192353_Initial")]

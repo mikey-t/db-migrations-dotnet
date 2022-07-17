@@ -1,16 +1,18 @@
 const {
-  defaultSpawnOptions,
-  waitForProcess,
   createTarball,
   copyNewEnvValues,
   overwriteEnvFile,
   dockerDepsUp,
   dockerDepsUpDetached,
   dockerDepsDown,
-  dockerContainerIsRunning
+  dockerContainerIsRunning,
+  dotnetDllCommand,
+  dotnetPublish,
+  dotnetDbMigrationsList,
+  dotnetDbMigrate,
+  dotnetDbAddMigration,
+  dotnetDbRemoveMigration
 } = require('@mikeyt23/node-cli-utils')
-let {throwIfDockerNotRunning} = require('@mikeyt23/node-cli-utils')
-const spawn = require('child_process').spawn
 const fsp = require('fs').promises
 const fse = require('fs-extra')
 const {series, parallel} = require('gulp')
@@ -21,16 +23,13 @@ const argv = yargs(hideBin(process.argv)).argv;
 
 const apiAppPath = './src/ExampleApi'
 const dbMigratorPath = './src/DbMigrator/'
-const dbMigratorDll = 'DbMigrator.dll'
 const dockerPath = './docker'
 const dockerProjectName = 'dbmigrationsexample'
 const dockerDbContainerName = 'dbmigrationsexample_postgres'
 const mainDbContextName = 'MainDbContext'
 
-const migratorSpawnOptions = {...defaultSpawnOptions, cwd: path.resolve(__dirname, dbMigratorPath)}
-const migratorSpawnOptionsWithInput = {...migratorSpawnOptions, stdio: 'inherit'}
-
-// Comment out function to undo skipping of throwIfDockerDepsNotUp checks
+// Comment out function to undo skipping of throwIfDockerDepsNotUp checks.
+// Skipping it saves several seconds, but won't warn you if you forget to run "npm run dockerUp" before starting your work.
 throwIfDockerDepsNotUp = async () => {
   console.log('skipping docker deps check')
 }
@@ -53,61 +52,6 @@ async function emptyMigratorPublishDir() {
   const migratorPublishPath = path.join(__dirname, `${dbMigratorPath}/publish/`)
   console.log('emptying path: ' + migratorPublishPath)
   fse.emptyDirSync(migratorPublishPath)
-}
-
-async function publishMigrator() {
-  return waitForProcess(spawn('dotnet', ['publish', '-o', 'publish'], migratorSpawnOptions))
-}
-
-async function dbInitialCreate() {
-  return waitForProcess(spawn('dotnet', [`publish/${dbMigratorDll}`, 'dbInitialCreate'], migratorSpawnOptions))
-}
-
-async function dbDropAll() {
-  return waitForProcess(spawn('dotnet', [`publish/${dbMigratorDll}`, 'dbDropAll'], migratorSpawnOptionsWithInput))
-}
-
-async function dbMigrate() {
-  return await dbMigrateWithContext(mainDbContextName)
-}
-
-async function dbAddMigration() {
-  let name = argv['name']
-  if (!name) {
-    throw '--name param is required'
-  }
-  return await dbAddMigrationWithContext(name, mainDbContextName, 'Main')
-}
-
-async function dbRemoveMigration() {
-  return await dbRemoveMigrationWithContext(mainDbContextName)
-}
-
-async function dbMigrationsList() {
-  return await dbMigrationsListWithContext(mainDbContextName)
-}
-
-async function dbMigrateWithContext(dbContextName) {
-  let args = ['ef', 'database', 'update']
-  let migrationName = argv['name']
-  if (!!migrationName) {
-    args.push(migrationName)
-  }
-  args = [...args, '--context', dbContextName]
-  return waitForProcess(spawn('dotnet', args, migratorSpawnOptions))
-}
-
-async function dbAddMigrationWithContext(migrationName, dbContextName, outputDirName) {
-  await throwIfDockerNotRunning()
-  return waitForProcess(spawn('dotnet', ['ef', 'migrations', 'add', migrationName, '--context', dbContextName, '-o', `Migrations/${outputDirName}`], migratorSpawnOptions))
-}
-
-async function dbRemoveMigrationWithContext(dbContextName) {
-  return waitForProcess(spawn('dotnet', ['ef', 'migrations', 'remove', '--context', dbContextName], migratorSpawnOptions))
-}
-
-async function dbMigrationsListWithContext(dbContextName) {
-  return waitForProcess(spawn('dotnet', ['ef', 'migrations', 'list', '--context', dbContextName], migratorSpawnOptions))
 }
 
 async function removeEnvFromPublishedMigrator() {
@@ -142,20 +86,39 @@ async function cleanNameFiles() {
   await fsp.writeFile('./src/ExampleApi/LastNames.txt', lastNames.join('\n'))
 }
 
-const publishDbMigrator = series(publishMigrator, removeEnvFromPublishedMigrator, packageDbMigrator)
+async function dbMigratorCommand(command) {
+  await dotnetDllCommand('publish/DbMigrator.dll', [command], dbMigratorPath, true) 
+}
+
+// ***************************************************
+// Reusable/composable command sets and method aliases
+
+const publishMigrator = async () => await dotnetPublish(dbMigratorPath)
+const prepDbMigration = series(throwIfDockerDepsNotUp, syncEnvFiles)
+const prepDbMigratorCli = series(throwIfDockerDepsNotUp, parallel(syncEnvFiles, emptyMigratorPublishDir), publishMigrator)
+
+// *****************************************************
+// Exported tasks that can be referenced in package.json
 
 exports.syncEnvFiles = syncEnvFiles
-exports.dockerDepsUp = series(syncEnvFiles, () => dockerDepsUp(dockerProjectName))
-exports.dockerDepsUpDetached = series(syncEnvFiles, () => dockerDepsUpDetached(dockerProjectName))
-exports.dockerDepsDown = () => dockerDepsDown(dockerProjectName)
 
-exports.dbInitialCreate = series(throwIfDockerDepsNotUp, parallel(syncEnvFiles, emptyMigratorPublishDir), publishMigrator, dbInitialCreate)
-exports.dbDropAll = series(throwIfDockerDepsNotUp, parallel(syncEnvFiles, emptyMigratorPublishDir), publishMigrator, dbDropAll)
-exports.dbDropAndRecreate = series(throwIfDockerDepsNotUp, publishMigrator, dbDropAll, dbInitialCreate)
-exports.dbMigrate = series(throwIfDockerDepsNotUp, syncEnvFiles, dbMigrate)
-exports.dbAddMigration = series(throwIfDockerDepsNotUp, syncEnvFiles, dbAddMigration)
-exports.dbRemoveMigration = series(throwIfDockerDepsNotUp, syncEnvFiles, dbRemoveMigration)
-exports.dbMigrationsList = series(throwIfDockerDepsNotUp, syncEnvFiles, dbMigrationsList)
-exports.publishDbMigrator = publishDbMigrator
+exports.dockerDepsUp = series(syncEnvFiles, async () => await dockerDepsUp(dockerProjectName))
+exports.dockerDepsUpDetached = series(syncEnvFiles, async () => await dockerDepsUpDetached(dockerProjectName))
+exports.dockerDepsDown = async () => await dockerDepsDown(dockerProjectName)
+
+exports.dbInitialCreate = series(prepDbMigratorCli, async () => await dbMigratorCommand('dbInitialCreate'))
+exports.dbDropAll = series(prepDbMigratorCli, async () => await dbMigratorCommand('dbDropAll'))
+exports.dbDropAndRecreate = series(
+  prepDbMigratorCli,
+  async () => await dbMigratorCommand('dbDropAll'),
+  async () => await dbMigratorCommand('dbInitialCreate')
+)
+
+exports.dbMigrate = series(prepDbMigration, async () => await dotnetDbMigrate(mainDbContextName, dbMigratorPath, argv['name']))
+exports.dbAddMigration = series(prepDbMigration, async () => await dotnetDbAddMigration(mainDbContextName, dbMigratorPath, argv['name']))
+exports.dbRemoveMigration = series(prepDbMigration, async () => await dotnetDbRemoveMigration(mainDbContextName, dbMigratorPath))
+exports.dbMigrationsList = series(prepDbMigration, async () => await dotnetDbMigrationsList(mainDbContextName, dbMigratorPath))
+
+exports.packageDbMigrator = series(publishMigrator, removeEnvFromPublishedMigrator, packageDbMigrator)
 
 exports.cleanNameFiles = cleanNameFiles
