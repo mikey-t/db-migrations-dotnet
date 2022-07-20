@@ -15,4 +15,15 @@ public class MiscUtil
         Console.WriteLine(str);
         Console.ResetColor();
     }
+    
+    public static string GetEnvString(string key, bool required = true)
+    {
+        var val = Environment.GetEnvironmentVariable(key);
+        if (required && string.IsNullOrWhiteSpace(val))
+        {
+            throw new Exception("Missing environment variable for key " + key);
+        }
+
+        return val ?? string.Empty;
+    }
 }

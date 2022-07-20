@@ -1,4 +1,5 @@
 ﻿using DbMigrator;
+using MikeyT.DbMigrations;
 using MikeyT.DbMigrations.Postgres;
 
-await new PostgresDbMigratorCli().Run(args, new MainDbContext());
+await DbMigratorCli.Run(args, new PostgresDbMigrator(new MainDbContext()));

@@ -12,7 +12,7 @@ At the most basic level, a DB migration framework should really just be responsi
 
 There are a number of full-featured DB migration frameworks and libraries out there. Some of them are great. Some of them cause more problems then they solve.
 
-Here are some reasons you might not want a framework or library for DB migrations:
+Here are some reasons you might not want a large and complex framework or library for DB migrations:
 
 - Using a DB migration framework might add unnecessary complexity to your project
 - Most DB migration frameworks are highly opinionated about how you treat DB management. The moment you need something they don't agree with, you're looking at a large effort to create a workaround, or you may end up ejecting from their solution completely, wasting valuable time.

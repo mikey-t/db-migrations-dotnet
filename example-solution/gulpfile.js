@@ -87,11 +87,11 @@ async function cleanNameFiles() {
 }
 
 async function dbMigratorCommand(command) {
-  await dotnetDllCommand('publish/DbMigrator.dll', [command], dbMigratorPath, true) 
+  await dotnetDllCommand('publish/DbMigrator.dll', [command], dbMigratorPath, true)
 }
 
-// ***************************************************
-// Reusable/composable command sets and method aliases
+// ********************************
+// Reusable/composable command sets
 
 const publishMigrator = async () => await dotnetPublish(dbMigratorPath)
 const prepDbMigration = series(throwIfDockerDepsNotUp, syncEnvFiles)
@@ -102,9 +102,9 @@ const prepDbMigratorCli = series(throwIfDockerDepsNotUp, parallel(syncEnvFiles, 
 
 exports.syncEnvFiles = syncEnvFiles
 
-exports.dockerDepsUp = series(syncEnvFiles, async () => await dockerDepsUp(dockerProjectName))
-exports.dockerDepsUpDetached = series(syncEnvFiles, async () => await dockerDepsUpDetached(dockerProjectName))
-exports.dockerDepsDown = async () => await dockerDepsDown(dockerProjectName)
+exports.dockerUpDetached = series(syncEnvFiles, async () => await dockerDepsUpDetached(dockerProjectName))
+exports.dockerUpAttached = series(syncEnvFiles, async () => await dockerDepsUp(dockerProjectName))
+exports.dockerDown = async () => await dockerDepsDown(dockerProjectName)
 
 exports.dbInitialCreate = series(prepDbMigratorCli, async () => await dbMigratorCommand('dbInitialCreate'))
 exports.dbDropAll = series(prepDbMigratorCli, async () => await dbMigratorCommand('dbDropAll'))

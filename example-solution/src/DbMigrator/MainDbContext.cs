@@ -10,7 +10,7 @@ public class MainDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotEnv.Load();
-        var settings = new PostgresDbMigratorSettings().Init();
+        var settings = new PostgresDbMigratorSettings();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));
         optionsBuilder.UseNpgsql(connectionString);

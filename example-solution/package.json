@@ -6,10 +6,10 @@
     "syncEnvFiles": "gulp syncEnvFiles",
     
     "api": "dotnet watch --project ./src/ExampleApi/ExampleApi.csproj",
-    
-    "dockerUpAttached": "gulp dockerDepsUp",
-    "dockerUp": "gulp dockerDepsUpDetached",
-    "dockerDown": "gulp dockerDepsDown",
+
+    "dockerUp": "gulp dockerUpDetached",
+    "dockerUpAttached": "gulp dockerUpAttached",
+    "dockerDown": "gulp dockerDown",
     
     "installDotnetEfTool": "dotnet tool install --global dotnet-ef",
     "updateDotnetEfTool": "dotnet tool update --global dotnet-ef",

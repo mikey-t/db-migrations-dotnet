@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using MikeyT.EnvironmentSettingsNS.Enums;
 
 namespace MikeyT.DbMigrations;
 
@@ -30,6 +29,6 @@ public class DefaultSqlPlaceholderReplacer : ISqlPlaceholderReplacer
 {
     public string GetSqlWithPlaceholderReplacements(string sql)
     {
-        return sql.Replace(":DB_USER", Environment.GetEnvironmentVariable(DbMigrationSettings.DB_USER.ToName()));
+        return sql.Replace(":DB_USER", Environment.GetEnvironmentVariable("DB_USER"));
     }
 }
