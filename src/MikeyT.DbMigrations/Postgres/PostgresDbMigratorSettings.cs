@@ -1,76 +1,55 @@
-﻿using MikeyT.EnvironmentSettingsNS.Enums;
+﻿using MikeyT.EnvironmentSettingsNS.Logic;
 
 namespace MikeyT.DbMigrations.Postgres;
 
-public class PostgresDbMigratorSettings : MigrationSettingsBase
+public class PostgresDbMigratorSettings : IDbMigratorSettings
 {
-    private const string POSTGRES = "postgres";
+    private const string TEST_DB_PREFIX = "test_";
 
-    private readonly string KEY_HOST = DbMigrationSettings.DB_HOST.ToName();
-    private readonly string KEY_PORT = DbMigrationSettings.DB_PORT.ToName();
-    private readonly string KEY_DB_NAME = DbMigrationSettings.DB_NAME.ToName();
-    private readonly string KEY_ROOT_USER = DbMigrationSettings.DB_ROOT_USER.ToName();
-    private readonly string KEY_ROOT_PASS = DbMigrationSettings.DB_ROOT_PASSWORD.ToName();
-    private readonly string KEY_USER = DbMigrationSettings.DB_USER.ToName();
-    private readonly string KEY_PASS = DbMigrationSettings.DB_PASSWORD.ToName();
+    public string Host { get; }
+    public string Port { get; }
+    public string DbName { get; }
+    public string TestDbName => $"{TEST_DB_PREFIX}{DbName}";
+    public string DbUser { get; }
+    public string DbPassword { get; }
+    public string DbRootUser { get; }
+    public string DbRootPassword { get; }
 
-    protected override List<string> GetEnvKeys()
+    public PostgresDbMigratorSettings()
     {
-        return new List<string>
-        {
-            KEY_HOST,
-            KEY_PORT,
-            KEY_DB_NAME,
-            KEY_ROOT_USER,
-            KEY_ROOT_PASS,
-            KEY_USER,
-            KEY_PASS
-        };
+        DotEnv.Load();
+        Host = MiscUtil.GetEnvString("DB_HOST");
+        Port = MiscUtil.GetEnvString("DB_PORT");
+        DbName = MiscUtil.GetEnvString("DB_NAME");
+        DbUser = MiscUtil.GetEnvString("DB_USER");
+        DbPassword = MiscUtil.GetEnvString("DB_PASSWORD");
+        DbRootUser = MiscUtil.GetEnvString("DB_ROOT_USER");
+        DbRootPassword = MiscUtil.GetEnvString("DB_ROOT_PASSWORD");
     }
 
-    public string GetDbUser()
+    public string GetRootConnectionString()
     {
-        return EnvPairs[KEY_USER];
+        return GetConnectionString("postgres", DbRootUser, DbRootPassword);
     }
 
-    public string GetDbPass()
+    public string GetMigrationsConnectionString()
     {
-        return EnvPairs[KEY_PASS];
+        return GetConnectionString(DbName, DbRootUser, DbRootPassword, true);
     }
 
-    public string GetDbName()
+    public string GetTestMigrationsConnectionString()
     {
-        return EnvPairs[KEY_DB_NAME];
+        return GetConnectionString(TestDbName, DbRootUser, DbRootPassword, true);
     }
 
-    public string GetTestDbName()
+    public string GetLogSafeConnectionString(string connectionString)
     {
-        return $"{Constants.TEST_PREFIX}{EnvPairs[KEY_DB_NAME]}";
-    }
-
-    public override string GetRootConnectionString()
-    {
-        return GetConnectionString(POSTGRES, EnvPairs[KEY_ROOT_USER], EnvPairs[KEY_ROOT_PASS]);
-    }
-
-    public override string GetMigrationsConnectionString()
-    {
-        return GetConnectionString(EnvPairs[KEY_DB_NAME], EnvPairs[KEY_ROOT_USER], EnvPairs[KEY_ROOT_PASS], true);
-    }
-
-    public override string GetTestMigrationsConnectionString()
-    {
-        return GetConnectionString(GetTestDbName(), EnvPairs[KEY_ROOT_USER], EnvPairs[KEY_ROOT_PASS], true);
-    }
-
-    public override string GetLogSafeConnectionString(string connectionString)
-    {
-        return connectionString.Replace(EnvPairs[KEY_ROOT_PASS], "********");
+        return connectionString.Replace(DbPassword, "******").Replace(DbRootPassword, "******");
     }
 
     private string GetConnectionString(string dbName, string dbUser, string dbPassword, bool withErrorDetail = false)
     {
-        var connectionString = $"Host={EnvPairs[KEY_HOST]};Port={EnvPairs[KEY_PORT]};Database={dbName};User Id={dbUser};Password={dbPassword};";
+        var connectionString = $"Host={Host};Port={Port};Database={dbName};User Id={dbUser};Password={dbPassword};";
 
         if (withErrorDetail)
         {
