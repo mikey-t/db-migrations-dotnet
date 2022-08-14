@@ -74,7 +74,7 @@ Steps:
 </tr>
 
 <tr>
-<td>Migrate DB to up to current</td>
+<td>Migrate DB up to current</td>
 <td>
 <code>npm run dbMigrate</code>
 </td>
@@ -106,7 +106,7 @@ If you were at current this will run the <code>Down()</code> method for the AddM
 You wouldn't want to do this after having pushed code with a migration. If you've already pushed code and you want to remove the schema you created, you should create a new DB migration that drops the objects in question. You should never delete a migration once it has left your developer machine (someone else could have run the migration or CI/CD could have migrated shared DB).<br/><br/>
 Steps:
 
-- To find out the name of the migration before the one you want to remove, you could run <code>npm run dbMigrationsList</code>code><br/>
+- To find out the name of the migration before the one you want to remove, you could run <code>npm run dbMigrationsList</code><br/>
 - If you're already run dbMigrate with the migration you want to remove, rollback using the name of the previous migration, run: <code>npm run dbMigrate -- --name=PreviousMigrationName</code><br/>
 - Run <code>npm run dbRemoveMigration -- --name=YourMigration</code><br/>
 - Delete SQL scripts you previously created in <code>Dbmigrator/Scripts</code>
@@ -143,19 +143,21 @@ If you're working on script automation for setting up the DB, you might want to 
 ## Diagrams
 
 Package.json and gulpfile example usage.
+
 ![db-migrations-dotnet Basic package.json and gulpfile usage](./docs/db-migrations-dotnet-basic-gulpfile-usage.drawio.png "db-migrations-dotnet basic package.json and gulpfile usage")
 
 Sample console app to contain auto-generated c# scripts in addition to manually created corresponding sql scripts.
+
 ![db-migrations-dotnet console app](./docs/db-migrations-dotnet-console-app.drawio.png "db-migrations-dotnet console app")
 
 Sample usage of console app to run arbitrary custom work. In this case, creating the initial DB instance and DB user.
+
 ![db-migrations-dotnet console app example usage](./docs/db-migrations-dotnet-console-app-example.drawio.png "db-migrations-dotnet console app example usage")
 
 Abstract steps for deployment of DB changes. When the console app receives the `dbMigrate` command, it simply instantiates the DbContext object and runs `await dbContext.Database.MigrateAsync();`.
+
 ![db-migrations-dotnet console app packaging and deployment](./docs/db-migrations-dotnet-package-and-deploy.drawio.png "db-migrations-dotnet console app packaging and deployment")
 
 ## Other docs
 
 - [Example New Setup](./docs/ExampleNewSetup.md)
-
-
