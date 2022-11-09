@@ -1,6 +1,6 @@
 # db-migrations-dotnet
 
-This is a NuGet package and sample solution that show how to manage DB migrations using plain SQL scripts and the built-in dotnet ef tool (Entity Framework) using some simple wrapper code to provide a connection string and give EF your script paths. All this without actually forcing you into using EF for your data access (we're only using it for the DB migrations themselves). An example project also shows how to use simple node package.json commands and gulp tasks to make the process even easier.
+This is a NuGet package and sample solution that show how to manage DB migrations using plain SQL scripts and the Microsoft CLI tool `dotnet ef` (Entity Framework) using some simple wrapper code to provide a connection string and give EF your script paths. All this without actually forcing you into using EF for your data access (we're only using it for the DB migrations themselves). An example project also shows how to use simple node package.json commands and gulp tasks to make the process even easier.
 
 You could extend this concept into a small framework, or just copy and paste a few lines from this example into your own project. The point is that you can get DB migrations without being forced into using EF for data access and without using a heavy opinionated DB migrations framework.
 
@@ -20,17 +20,17 @@ Here are some reasons you might not want a large and complex framework or librar
 - Increased onboarding time for new developers on the project
 - DB frameworks advertise that they've created the ability to manipulate SQL in your favorite non-SQL programming language. My experience is that the best language for SQL is usually... SQL. Using your favorite programming language to manipulate SQL seems cool, but might sometimes just be a novelty that costs more time than it saves.
 
-The goal of this project is to demonstrate that we can get basic DB migration functionality without a third party framework. We can leverage some existing tools (dotnet ef) and the tried and tested plain SQL scripts that won't fail because of an intermediary translation layer failure.
+The goal of this project is to demonstrate that we can get basic DB migration functionality without a third party framework. We can leverage some existing tools (`dotnet ef`) and the tried and tested plain SQL scripts that won't fail because of an intermediary translation layer failure.
 
 ## What is the shortest path to implementing this?
 
 Most of the code in this project is just example stuff you may or may not need or want. At a minimum, you need:
 
 - A project that includes references to:
-  - Microsoft.EntityFrameworkCore
-  - Microsoft.EntityFrameworkCore.Relational
-  - Microsoft.EntityFrameworkCore.Design
-- A DbContext class that you provide a DB connection string to
+  - `Microsoft.EntityFrameworkCore`
+  - `Microsoft.EntityFrameworkCore.Relational`
+  - `Microsoft.EntityFrameworkCore.Design`
+- A `DbContext` class that you provide a DB connection string to
 - A helper method that calls the `MigrationBuilder.Sql()` method that you can use in in the Up and Down methods that the dotnet ef tool generates
 
 ## What extra stuff is in this example project?
@@ -41,7 +41,7 @@ Most of the extra stuff in the example project falls in one of these categories:
 - Code to read in SQL files from a common location and process/replace any script placeholders
 - Convenience scripts to build and package a console app that can be used to migrate DBs in non-dev environments
 
-Most projects/teams are going to have specific requirements and preferences when it comes to environments, deployments and automation/scripting, so much of this extra example code may or my not be relevant to your particular situation. The key here is that you can take just the dotnet ef tool use and plain SQL scripts and use your team's other custom processes. Flexibility is the name of the game here.
+Most projects/teams are going to have specific requirements and preferences when it comes to environments, deployments and automation/scripting, so much of this extra example code may or my not be relevant to your particular situation. The key here is that you can take just the `dotnet ef` tool with plain SQL scripts and use your team's other custom processes. Flexibility is the name of the game here.
 
 ## Common developer DB related tasks
 
@@ -68,7 +68,7 @@ Steps:
 
 - <code>npm run dbAddMigration -- --name=YourMigrationName</code>
 - Create Up and Down SQL scripts in DbMigrator/Scripts dir
-- Add calls to <code>MigrationScriptRunner.RunScript</code> in auto-generated Up and Down methods, referencing the SQL files you just created
+- Add calls to <code>MigrationScriptRunner.RunScript</code> in auto-generated <code>Up</code> and <code>Down</code> methods, referencing the SQL files you just created
 - Run <code>npm run dbMigrate</code>
 </td>
 </tr>
@@ -96,19 +96,22 @@ then you can migrate to the state after AddPerson but before AddMoreStuff by run
 
 <code>npm run dbMigrate -- --name=AddPerson</code>
 
-If you were at current this will run the <code>Down()</code> method for the AddMoreStuff DB migration. If you were at Initial, this would run the <code>Up()</code> method for the AddPerson DB migration. Note that you don't have to use the auto-generated timestamps when passing migration name as a parameter.
+If you were at current this will run the <code>Down()</code> method for the AddMoreStuff DB migration. If you were at Initial, this would run the <code>Up()</code> method for the AddPerson DB migration. Note that you don't use the auto-generated timestamps when passing migration name as a parameter.
 </td>
 </tr>
 
 <tr>
 <td>Remove DB migration</td>
 <td>
-You wouldn't want to do this after having pushed code with a migration. If you've already pushed code and you want to remove the schema you created, you should create a new DB migration that drops the objects in question. You should never delete a migration once it has left your developer machine (someone else could have run the migration or CI/CD could have migrated shared DB).<br/><br/>
+You wouldn't want to do this after having pushed code with a migration. If you've already pushed code and you want to remove the schema you created, you should create a new DB migration that drops the objects in question. You should never delete a migration once it has left your developer machine (someone else could have run the migration or CI/CD could have migrated a shared DB).<br/>
+
+Our command `npm run dbRemoveMigration` runs the dotnet ef command `dotnet ef migrations remove`, which just pops the latest off the stack. You'll want to first ensure you're prepared by ensuring the latest migration has been migrated down. If you haven't migrated the last one `Up`, then you can just run the removal command, otherwise rollback the last migration by running it's `Down` script.<br/>
+
 Steps:
 
-- To find out the name of the migration before the one you want to remove, you could run <code>npm run dbMigrationsList</code><br/>
-- If you're already run dbMigrate with the migration you want to remove, rollback using the name of the previous migration, run: <code>npm run dbMigrate -- --name=PreviousMigrationName</code><br/>
-- Run <code>npm run dbRemoveMigration -- --name=YourMigration</code><br/>
+- Find the name of the second to last migration by running: <code>npm run dbMigrationsList</code><br/>
+- Trigger the `Down` script for the last migration: <code>npm run dbMigrate -- --name=PreviousMigrationName</code><br/>
+- Run <code>npm run dbRemoveMigration</code><br/>
 - Delete SQL scripts you previously created in <code>Dbmigrator/Scripts</code>
 </td>
 </tr>
