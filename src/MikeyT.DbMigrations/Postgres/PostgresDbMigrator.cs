@@ -8,18 +8,18 @@ public class PostgresDbMigrator : DbMigratorBase
 {
     private readonly PostgresDbMigratorSettings settings;
     private readonly DbContext DbContextForPackagedDbMigrate;
-    
+
     public PostgresDbMigrator(DbContext dbContextForPackagedDbMigrate)
     {
         settings = new PostgresDbMigratorSettings();
         DbContextForPackagedDbMigrate = dbContextForPackagedDbMigrate;
     }
-    
+
     public override async Task CreateUsersAndDatabases()
     {
         var rootConnectionString = settings.GetRootConnectionString();
         var logSafeRootConnectionString = settings.GetLogSafeConnectionString(rootConnectionString);
-        
+
         Console.WriteLine($"creating databases {settings.DbName} and {settings.TestDbName} and user {settings.DbUser} using root connection string {logSafeRootConnectionString}");
 
         await using var connection = new NpgsqlConnection(rootConnectionString);
@@ -69,15 +69,16 @@ public class PostgresDbMigrator : DbMigratorBase
     {
         await DbContextForPackagedDbMigrate.Database.MigrateAsync();
     }
-    
+
     private async Task DropDb(NpgsqlConnection conn, string dbName)
     {
-        // Drop existing connection before dropping DB
-        await conn.ExecuteAsync(@$"SELECT pg_terminate_backend(pg_stat_activity.pid)
-                    FROM pg_stat_activity
-                    WHERE pg_stat_activity.datname = '{dbName}'
-                    AND pid <> pg_backend_pid();DROP DATABASE IF EXISTS {dbName}");
+        // Terminate existing connections to the database
+        await conn.ExecuteAsync($"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();");
+
+        // Drop the database
+        await conn.ExecuteAsync($"DROP DATABASE IF EXISTS {dbName}");
     }
+
 
     private async Task<bool> RoleExists(NpgsqlConnection connection, string role)
     {
@@ -88,13 +89,13 @@ public class PostgresDbMigrator : DbMigratorBase
     {
         return await connection.QuerySingleAsync<bool>($"select exists(SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{dbName}'));");
     }
-    
+
     private async Task CreateRole(NpgsqlConnection connection, string user, string password)
     {
         await connection.ExecuteAsync($"CREATE ROLE {user} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT NOREPLICATION CONNECTION " +
                                       $"LIMIT -1 PASSWORD '{password}';");
     }
-    
+
     private async Task CreateDb(NpgsqlConnection connection, string dbName, string owningUser)
     {
         await connection.ExecuteAsync($"CREATE DATABASE {dbName} WITH OWNER = {owningUser} ENCODING = 'UTF8' CONNECTION LIMIT = -1;");

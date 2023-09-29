@@ -1,6 +1,6 @@
 {
   "name": "db-migrations-dotnet",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Helper commands for managing the MikeyT.DbMigrations NuGet package",
   "scripts": {
     "packOnly": "gulp packOnly",
