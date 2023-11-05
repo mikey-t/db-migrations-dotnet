@@ -1,0 +1,35 @@
+{
+    "[typescript]": {
+        "editor.autoIndent": "full",
+        "editor.trimAutoWhitespace": false
+    },
+    "[javascript]": {
+        "editor.autoIndent": "full",
+        "editor.trimAutoWhitespace": false
+    },
+    "[csharp]": {
+        "editor.autoIndent": "full",
+        "editor.trimAutoWhitespace": false
+    },
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "javascript.format.semicolons": "remove",
+    "typescript.format.semicolons": "remove",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "javascript.preferences.importModuleSpecifier": "relative",
+    "cSpell.words": [
+        "cobertura",
+        "datname",
+        "dbmigrationsexample",
+        "NOCREATEDB",
+        "NOCREATEROLE",
+        "NOREPLICATION",
+        "NOSUPERUSER",
+        "nupkg",
+        "reportgenerator",
+        "reporttypes",
+        "rolname",
+        "sqlserver",
+        "targetdir"
+    ]
+}

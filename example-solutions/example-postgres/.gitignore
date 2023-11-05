@@ -1,0 +1,9 @@
+**/.env
+**/bin/
+**/obj/
+**/publish/
+**/build/
+**/release/
+**/.vs/
+**/.idea/
+**/node_modules/

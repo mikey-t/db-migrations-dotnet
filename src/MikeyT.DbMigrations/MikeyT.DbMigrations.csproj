@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageVersion>0.4.0</PackageVersion>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>0.2.1-alpha</PackageVersion>
     <Title>MikeyT.DbMigrations</Title>
-    <Authors>Michael Thompson</Authors>
+    <Authors>Mike Thompson</Authors>
     <Description>Dotnet DB migrations library utilizing Entity Framework and plain SQL files.</Description>
-    <Copyright>2022 Michael Thompson</Copyright>
+    <Copyright>2023 Mike Thompson</Copyright>
     <PackageProjectUrl>https://github.com/mikey-t/db-migrations-dotnet</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/mikey-t/db-migrations-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>dotnet;db-migrations</PackageTags>
@@ -24,15 +25,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.4" />
-    <PackageReference Include="MikeyT.EnvironmentSettings" Version="0.2.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>true</Pack>
-      <PackagePath />
-    </None>
+    <None Include="LICENSE" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

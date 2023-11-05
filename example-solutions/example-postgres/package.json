@@ -1,15 +1,15 @@
 {
-  "name": "db-migrations-dotnet",
+  "name": "example-solution",
   "version": "0.0.1",
-  "description": "This top-level npm package is solely for dev workflow commands for the db-migrations-dotnet project (see swigfile.ts).",
+  "description": "Helper commands for managing a PostgreSQL example solution that utilizes the MikeyT.DbMigrations nuget package (see swigfile.ts)",
   "type": "module",
-  "author": "Mike Thompson",
+  "author": "Michael Thompson",
   "license": "MIT",
   "devDependencies": {
     "@mikeyt23/node-cli-utils": "^2.0.15",
     "@types/node": "^18.18.7",
-    "dotenv": "^16.3.1",
     "swig-cli": "^0.0.15",
+    "swig-cli-modules": "^0.0.18",
     "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   },
