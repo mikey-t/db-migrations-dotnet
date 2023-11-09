@@ -1,4 +1,16 @@
+using System.Collections.Immutable;
+
 namespace MikeyT.DbMigrations;
+
+public static class Commands
+{
+    public const string Setup = "setup";
+    public const string Teardown = "teardown";
+    public const string List = "list";
+    public const string BootstrapContext = "bootstrapContext";
+    public static readonly ImmutableArray<string> AllCommands = ImmutableArray.Create(Setup, Teardown, List, BootstrapContext);
+    public static string AllCommandsCommaSeparated { get { return string.Join(", ", AllCommands); } }
+}
 
 public record DbSetupArgs(string Command, List<DbContextInfo> DbContextInfos);
 

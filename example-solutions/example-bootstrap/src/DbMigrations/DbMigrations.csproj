@@ -12,11 +12,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="MikeyT.DbMigrations" Version="0.4.0" />
+    <!-- <PackageReference Include="MikeyT.DbMigrations" Version="0.4.0" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\MikeyT.DbMigrations\MikeyT.DbMigrations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations/MainDbContextMigrations" />
+        <Folder Include="Migrations/TestDbContextMigrations" />
   </ItemGroup>
   <ItemGroup>
     <None Update=".env">

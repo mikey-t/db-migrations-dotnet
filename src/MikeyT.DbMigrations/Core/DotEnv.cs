@@ -80,7 +80,7 @@ public class DotEnv : IDotEnv
 
     public void SetLogEnabled(bool logEnabled)
     {
-        this._logEnabled = logEnabled;
+        _logEnabled = logEnabled;
     }
 }
 

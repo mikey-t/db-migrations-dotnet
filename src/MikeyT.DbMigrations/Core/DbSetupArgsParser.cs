@@ -2,15 +2,6 @@ using System.Collections.Immutable;
 
 namespace MikeyT.DbMigrations;
 
-public static class Commands
-{
-    public const string Setup = "setup";
-    public const string Teardown = "teardown";
-    public const string List = "list";
-    public static readonly ImmutableArray<string> AllCommands = ImmutableArray.Create(Setup, Teardown, List);
-    public static string AllCommandsCommaSeparated { get { return string.Join(", ", AllCommands); } }
-}
-
 public class DbSetupArgsParser
 {
     private static readonly string[] AvailableCommands = { Commands.Setup, Commands.Teardown, Commands.List };

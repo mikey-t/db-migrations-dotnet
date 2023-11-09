@@ -16,7 +16,6 @@ public class PostgresSettingsTest : BaseTestWithOutput
     }
     
     [Fact]
-    [Trait("Category", "only")]
     public void Ctor_PopulatesEnvSubstitutions()
     {
         var settings = new PostgresSettingsDummyWithSubstitutions().GetSettings();

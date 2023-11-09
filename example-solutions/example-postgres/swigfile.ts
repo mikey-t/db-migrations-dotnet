@@ -35,7 +35,7 @@ export { installOrUpdateDotnetEfTool } from '@mikeyt23/node-cli-utils/dotnetUtil
 //   await ensureDbMigratorSetup()
 // }
 
-export async function clean() {
+export async function deleteMigrationsProject() {
   await fsp.rm(dbMigrationsPath, { recursive: true, force: true })
 }
 

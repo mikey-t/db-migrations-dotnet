@@ -1,4 +1,4 @@
-import { Emoji, emptyDirectory, getRequiredEnvVar, log, requireValidPath, spawnAsync, spawnAsyncLongRunning, which } from '@mikeyt23/node-cli-utils'
+import { Emoji, SpawnResult, emptyDirectory, getRequiredEnvVar, log, requireValidPath, spawnAsync, spawnAsyncLongRunning, which } from '@mikeyt23/node-cli-utils'
 import { dotnetBuild, installOrUpdateReportGeneratorTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
 import 'dotenv/config'
 import fs from 'node:fs'
@@ -30,17 +30,24 @@ export const publish = series(
   nugetPublishDbMigrations
 )
 
-export async function test(withCoverageReportOverride = true) {
+// Decorate tests with the following attribute for "only" functionality:
+// [Trait("Category", "only")]
+export async function test(withCoverageReportOverride = false) {
   await deleteTestCoverage()
 
   const verboseFlags = oneOfArgsPassed('verbose', 'v') ? ['--logger', 'console;verbosity=detailed'] : []
   const onlyFlags = oneOfArgsPassed('only', 'o') ? ['--filter', 'Category=only'] : []
   const coverageArgs = oneOfArgsPassed('coverage', 'c') || withCoverageReportOverride ? ['--collect:"XPlat Code Coverage"'] : []
 
+  let result: SpawnResult
   if (oneOfArgsPassed('watch', 'w')) {
-    await spawnAsyncLongRunning('dotnet', ['watch', 'test', ...verboseFlags, ...onlyFlags, ...coverageArgs], testProjectPath)
+    result = await spawnAsyncLongRunning('dotnet', ['watch', 'test', ...verboseFlags, ...onlyFlags, ...coverageArgs], testProjectPath)
   } else {
-    await spawnAsync('dotnet', ['test', ...verboseFlags, ...onlyFlags, ...coverageArgs], { cwd: testProjectPath })
+    result = await spawnAsync('dotnet', ['test', ...verboseFlags, ...onlyFlags, ...coverageArgs], { cwd: testProjectPath })
+  }
+  
+  if (result.code !== 0) {
+    throw new Error('Tests failed')
   }
 
   if (oneOfArgsPassed('report', 'r') || withCoverageReportOverride) {

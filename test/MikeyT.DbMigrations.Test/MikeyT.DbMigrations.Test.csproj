@@ -28,7 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update=".env" CopyToOutputDirectory="PreserveNewest" />
+    <None Update=".env" CopyToOutputDirectory="Always" />
+    <None Update="./Fixtures/CsprojWithFolder.txt" CopyToOutputDirectory="Always" />
+    <None Update="./Fixtures/CsprojWithoutFolder.txt" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

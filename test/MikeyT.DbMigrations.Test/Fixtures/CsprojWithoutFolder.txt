@@ -14,10 +14,7 @@
     </PackageReference>
     <PackageReference Include="MikeyT.DbMigrations" Version="0.4.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations/MainDbContextMigrations" />
-  </ItemGroup>
+  
   <ItemGroup>
     <None Update=".env">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

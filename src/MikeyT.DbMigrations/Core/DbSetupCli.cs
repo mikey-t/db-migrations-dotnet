@@ -11,6 +11,10 @@ Usage: dotnet run <command> [options]
 Commands:
   setup       Creates the database and roles for the specified DbContext classes.
   teardown    Drops the database and roles for the specified DbContext classes.
+  list        List DbContext classes in project along with some meta data.
+  bootstrap   Unlike other commands, pass a single DbContext class name and the name of the
+              DbSetup class implementation for the database type you want. For this command
+              the class names should be the full case sensitive names of the classes.
   help        Displays this help message.
 
 Options:
@@ -18,9 +22,10 @@ Options:
                       Names are case-insensitive and the 'DbContext' postfix is optional.
 
 Examples:
-  dotnet run setup application user    Sets up the databases and user roles for ApplicationDbContext and UserDbContext.
-  dotnet run teardown application      Tears down the ApplicationDbContext.
-  dotnet run help                      Displays this help message.
+  dotnet run setup application user                   Sets up the databases and user roles for ApplicationDbContext and UserDbContext.
+  dotnet run teardown application                     Tears down the ApplicationDbContext.
+  dotnet run bootstrap MainDbContext PostgresSetup    Bootstraps a new DbContext class.
+  dotnet run help                                     Displays this help message.
 ";
 
     public DbSetupCli() : this(new ConsoleLogger(), new DbContextFinder()) { }
@@ -35,19 +40,25 @@ Examples:
     {
         try
         {
+            if (IsBootstrapCommand(args))
+            {
+                BootstrapDbContext(args);
+                return 0;
+            }
+
             var setupArgs = new DbSetupArgsParser().GetDbSetupArgs(args);
 
             switch (setupArgs.Command)
             {
                 case Commands.List:
                     ListDbContextInfos();
-                    return 0;
+                    break;
                 case Commands.Setup:
                     await OperateOnDbContexts(Commands.Setup, setupArgs);
-                    return 0;
+                    break;
                 case Commands.Teardown:
                     await OperateOnDbContexts(Commands.Teardown, setupArgs);
-                    return 0;
+                    break;
             }
             return 0;
         }
@@ -69,7 +80,7 @@ Examples:
         var contextsInfos = _dbContextFinder.GetAllDbContextInfos();
         if (contextsInfos.Count == 0)
         {
-            _logger.Warn("⚠️ No DbContext classes found");
+            _logger.Warn("No DbContext classes found");
             return;
         }
 
@@ -140,5 +151,15 @@ Examples:
                 await setupInstance.Teardown();
             }
         }
+    }
+
+    private bool IsBootstrapCommand(string[] args)
+    {
+        return args.Length > 0 && args[0].ToLower() == "bootstrap";
+    }
+
+    private void BootstrapDbContext(string[] args)
+    {
+        
     }
 }
