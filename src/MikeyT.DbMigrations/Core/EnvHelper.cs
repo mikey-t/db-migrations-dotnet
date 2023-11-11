@@ -4,7 +4,6 @@ public interface IEnvHelper
 {
     public string GetString(string key);
     public string GetRequiredString(string key);
-    public void AssignSubstitutions(List<EnvSubstitution> envSubstitutions);
 }
 
 public class EnvHelper : IEnvHelper
@@ -19,11 +18,6 @@ public class EnvHelper : IEnvHelper
     public string GetString(string key)
     {
         return GetString(key, false);
-    }
-
-    public void AssignSubstitutions(List<EnvSubstitution> envSubstitutions)
-    {
-        _envSubstitutions = envSubstitutions;
     }
 
     private string GetString(string key, bool required)

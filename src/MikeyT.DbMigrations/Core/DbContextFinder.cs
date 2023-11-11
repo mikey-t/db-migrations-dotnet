@@ -12,10 +12,10 @@ public class DbContextFinder : IDbContextFinder
 {
     private bool _useCallingAssembly = false;
 
-    public DbContextFinder() : this(false) { }
-
-    // Set useCallingAssembly to true for unit tests
-    public DbContextFinder(bool useCallingAssembly)
+    /// <summary>
+    /// Set <c>useCallingAssembly</c> to true for unit tests.
+    /// </summary>
+    public DbContextFinder(bool useCallingAssembly = false)
     {
         _useCallingAssembly = useCallingAssembly;
     }
@@ -40,18 +40,8 @@ public class DbContextFinder : IDbContextFinder
 
         foreach (var dbContext in dbContextTypes)
         {
-            // Note that the setupType might be null - take action on this elsewhere
-            var setupType = dbContext.GetCustomAttribute<DbSetupClassAttribute>()?.SetupClass;
-
-            var envSubstitutions = new List<EnvSubstitution>();
-
-            var envSubAttributes = dbContext.GetCustomAttributes<EnvSubstitutionAttribute>();
-            foreach (var subAttribute in envSubAttributes)
-            {
-                envSubstitutions.Add(new EnvSubstitution(subAttribute.FromEnvKey, subAttribute.ToEnvKey));
-            }
-
-            all.Add(new DbContextInfo(dbContext, setupType, envSubstitutions));
+            var setupType = TypeHelper.GetGenericInterfaceType(dbContext, typeof(IDbSetupContext<>));
+            all.Add(new DbContextInfo(dbContext, setupType));
         }
 
         return all;

@@ -1,29 +1,47 @@
-﻿namespace MikeyT.DbMigrations;
+﻿using System.Reflection;
+
+namespace MikeyT.DbMigrations;
 
 public abstract class DbSettings
 {
-    private readonly Type _dbContextType;
-    protected readonly List<EnvSubstitution> EnvSubstitutions;
-
-    public DbSettings(Type dbContextType)
-    {
-        _dbContextType = dbContextType;
-        EnvSubstitutions = GetEnvSubstitutionsFromAttributes();
-    }
-
+    /// <summary>
+    /// Implementation must provide a connection string that EntityFramework can use to access the correct database
+    /// and change any schema necessary.
+    /// </summary>
     public abstract string GetMigrationsConnectionString();
 
-    private List<EnvSubstitution> GetEnvSubstitutionsFromAttributes()
+    /// <summary>
+    /// Implementation must provide a connection string for an account that has the necessary privileges to create
+    /// and drop databases and users.
+    /// </summary>
+    public abstract string GetDbSetupConnectionString();
+
+    /// <summary>
+    /// Returns a connection string with redacted values for any string properties in the implementation class that
+    /// are decorated with the <c>[DoNotLog]</c> attribute.
+    /// </summary>
+    public string GetLogSafeConnectionString(string connectionString)
     {
-        var envSubstitutions = new List<EnvSubstitution>();
-
-        var attributes = _dbContextType.GetCustomAttributes(typeof(EnvSubstitutionAttribute), true);
-
-        foreach (EnvSubstitutionAttribute attribute in attributes.Cast<EnvSubstitutionAttribute>())
+        foreach (var property in GetType().GetProperties())
         {
-            envSubstitutions.Add(new EnvSubstitution(attribute.FromEnvKey, attribute.ToEnvKey));
+            if (property.PropertyType != typeof(string))
+            {
+                continue;
+            }
+
+            var propNameHasPassword = property.Name.ToLower().Contains("password");
+            var doNotLogAttribute = property.GetCustomAttribute<DoNotLogAttribute>();
+            if (doNotLogAttribute == null && !propNameHasPassword)
+            {
+                continue;
+            }
+
+            if (property.GetValue(this) is string value && !string.IsNullOrEmpty(value))
+            {
+                connectionString = connectionString.Replace(value, "*****");
+            }
         }
 
-        return envSubstitutions;
+        return connectionString;
     }
 }

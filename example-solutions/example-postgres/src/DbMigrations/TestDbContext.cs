@@ -5,7 +5,6 @@ using MikeyT.DbMigrations;
 namespace DbMigrations;
 
 [DbSetupClass(typeof(PostgresSetup))]
-[EnvSubstitution("DB_NAME", "DB_NAME_TEST")]
 public class TestDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

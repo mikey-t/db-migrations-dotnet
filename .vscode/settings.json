@@ -18,7 +18,9 @@
     "typescript.preferences.importModuleSpecifier": "relative",
     "javascript.preferences.importModuleSpecifier": "relative",
     "cSpell.words": [
+        "Bootstrapper",
         "cobertura",
+        "datdba",
         "datname",
         "dbmigrationsexample",
         "NOCREATEDB",

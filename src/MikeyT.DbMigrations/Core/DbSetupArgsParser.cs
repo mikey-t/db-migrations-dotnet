@@ -6,13 +6,13 @@ public class DbSetupArgsParser
 {
     private static readonly string[] AvailableCommands = { Commands.Setup, Commands.Teardown, Commands.List };
 
-    private readonly IDbContextFinder _dbContextInfoRetriever;
+    private readonly IDbContextFinder _dbContextFinder;
 
     public DbSetupArgsParser() : this(new DbContextFinder()) { }
 
-    public DbSetupArgsParser(IDbContextFinder dbContextInfoRetriever)
+    public DbSetupArgsParser(IDbContextFinder dbContextFinder)
     {
-        _dbContextInfoRetriever = dbContextInfoRetriever;
+        _dbContextFinder = dbContextFinder;
     }
 
     public DbSetupArgs GetDbSetupArgs(string[] args)
@@ -25,7 +25,7 @@ public class DbSetupArgsParser
         var command = args[0].ToLower();
         if (!AvailableCommands.Contains(command))
         {
-            throw new CliParamException($@"Unknown command ""{command}"" - available commands: ${Commands.AllCommandsCommaSeparated}");
+            throw new CliParamException($@"Unknown command ""{command}"" - available commands: {Commands.AllCommandsCommaSeparated}");
         }
 
         if (command == Commands.List)
@@ -39,16 +39,16 @@ public class DbSetupArgsParser
             throw new CliParamException(missingContextNames);
         }
 
-        var allDbContextInfos = _dbContextInfoRetriever.GetAllDbContextInfos();
+        var allDbContextInfos = _dbContextFinder.GetAllDbContextInfos();
 
-        var dbContextInfos = new List<DbContextInfo>();
+        var matchingDbContextInfos = new List<DbContextInfo>();
 
         for (var i = 1; i < args.Length; i++)
         {
-            dbContextInfos.Add(TryFindingDbContextInfoMatch(args[i], allDbContextInfos));
+            matchingDbContextInfos.Add(TryFindingDbContextInfoMatch(args[i], allDbContextInfos));
         }
 
-        return new DbSetupArgs(command, dbContextInfos);
+        return new DbSetupArgs(command, matchingDbContextInfos);
     }
 
     // Case insensitive, does not require "DbContext" on the end

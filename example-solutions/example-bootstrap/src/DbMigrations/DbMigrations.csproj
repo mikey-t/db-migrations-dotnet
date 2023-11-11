@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations/MainDbContextMigrations" />
-        <Folder Include="Migrations/TestDbContextMigrations" />
+    <Folder Include="Migrations/TestDbContextMigrations" />
   </ItemGroup>
   <ItemGroup>
     <None Update=".env">

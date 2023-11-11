@@ -1,9 +1,13 @@
-﻿namespace MikeyT.DbMigrations;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+
+namespace MikeyT.DbMigrations;
 
 public class DbSetupCli
 {
     private readonly IConsoleLogger _logger;
     private readonly IDbContextFinder _dbContextFinder;
+    private readonly bool _rethrowUnhandled;
 
     private const string Help = @"
 Usage: dotnet run <command> [options]
@@ -30,23 +34,24 @@ Examples:
 
     public DbSetupCli() : this(new ConsoleLogger(), new DbContextFinder()) { }
 
-    public DbSetupCli(IConsoleLogger logger, IDbContextFinder dbContextFinder)
+    public DbSetupCli(IConsoleLogger logger, IDbContextFinder dbContextFinder, bool rethrowUnhandled = false)
     {
         _logger = logger;
         _dbContextFinder = dbContextFinder;
+        _rethrowUnhandled = rethrowUnhandled;
     }
 
     public async Task<int> Run(string[] args)
     {
         try
         {
-            if (IsBootstrapCommand(args))
+            if (DbContextBootstrapper.IsBootstrapCommand(args))
             {
-                BootstrapDbContext(args);
+                new DbContextBootstrapper().Bootstrap(args);
                 return 0;
             }
 
-            var setupArgs = new DbSetupArgsParser().GetDbSetupArgs(args);
+            var setupArgs = new DbSetupArgsParser(_dbContextFinder).GetDbSetupArgs(args);
 
             switch (setupArgs.Command)
             {
@@ -71,6 +76,12 @@ Examples:
         catch (Exception ex)
         {
             _logger.Error(ex);
+
+            if (_rethrowUnhandled)
+            {
+                throw;
+            }
+
             return 1;
         }
     }
@@ -84,7 +95,7 @@ Examples:
             return;
         }
 
-        var headers = new List<string>() { "DbContext Name", "DbSetupType Name", "Env Substitutions" };
+        var headers = new List<string>() { "DbContext Name", "DbSetup Type" };
         var rows = new List<List<string>>();
         foreach (var contextInfo in contextsInfos)
         {
@@ -93,21 +104,14 @@ Examples:
             var dbSetupTypeName = contextInfo.SetupType?.Name;
             if (dbSetupTypeName == null)
             {
-                dbSetupTypeName = "⚠️ (missing DbSetupType attribute)";
+                dbSetupTypeName = "⚠️ (Does not inherit from IDbSetupContext)";
             }
             else
             {
                 dbSetupTypeName = "✔️ " + dbSetupTypeName;
             }
 
-            var envSubMappingStrings = new List<string>();
-            foreach (var sub in contextInfo.EnvSubstitutions)
-            {
-                envSubMappingStrings.Add($"{sub.FromEnvKey} -> {sub.ToEnvKey}");
-            }
-            var envSubsString = string.Join(", ", envSubMappingStrings);
-
-            rows.Add(new List<string>() { dbContextName, dbSetupTypeName, envSubsString });
+            rows.Add(new List<string>() { dbContextName, dbSetupTypeName });
         }
         _logger.WriteLine(Environment.NewLine + TableGenerator.Generate(headers, rows) + Environment.NewLine);
     }
@@ -126,40 +130,35 @@ Examples:
 
             if (dbContextInfo.SetupType == null)
             {
-                _logger.Warn($@"The DbContext type ""{dbContextTypeName}"" does not have a SetupType attribute - skipping");
+                _logger.Warn($@"The DbContext type ""{dbContextTypeName}"" does not inherit from IDbSetupContext - skipping");
                 continue;
             }
 
             _logger.Info($@"Running {command} for DbContext ""{dbContextTypeName}"" using DbSetupType ""{setupTypeName}""");
 
-            if (Activator.CreateInstance(dbContextInfo.SetupType, dbContextInfo.DbContextType) is not DbSetup setupInstance)
-            {
-                throw new Exception($@"The SetupType provided was instantiated but it does not appear to be derived from the DbSetup class: ""{setupTypeName}""");
-            }
+            var contextInstance = Activator.CreateInstance(dbContextInfo.DbContextType)
+                ?? throw new Exception("Unable to instantiate DbContext type");
 
-            if (setupInstance is null)
+            Type iDbSetupContextType = typeof(IDbSetupContext<>);
+            Type[] iDbSetupContextTypeArgs = { dbContextInfo.SetupType };
+            Type iDbSetupContextTypeWithGenericArgs = iDbSetupContextType.MakeGenericType(iDbSetupContextTypeArgs);
+
+            MethodInfo getDbSetupMethod = iDbSetupContextTypeWithGenericArgs.GetMethod("GetDbSetup", Array.Empty<Type>())
+                ?? throw new Exception($@"Unable to dynamically get IDbSetupContext method ""GetDbSetup""");
+
+            if (getDbSetupMethod.Invoke(contextInstance, null) is not DbSetup dbSetup)
             {
-                throw new Exception($@"Unable to instantiate DbSetup type ""{setupTypeName}"" - Activator.CreateInstance returned null");
+                throw new Exception($@"Unable to dynamically invoke IDbSetupContext method ""GetDbSetup""");
             }
 
             if (command == Commands.Setup)
             {
-                await setupInstance.Setup();
+                await dbSetup.Setup();
             }
             else
             {
-                await setupInstance.Teardown();
+                await dbSetup.Teardown();
             }
         }
-    }
-
-    private bool IsBootstrapCommand(string[] args)
-    {
-        return args.Length > 0 && args[0].ToLower() == "bootstrap";
-    }
-
-    private void BootstrapDbContext(string[] args)
-    {
-        
     }
 }

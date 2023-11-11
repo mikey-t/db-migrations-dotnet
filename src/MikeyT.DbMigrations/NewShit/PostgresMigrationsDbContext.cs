@@ -1,15 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MikeyT.DbMigrations.Test;
+namespace MikeyT.DbMigrations;
 
-[DbSetupClass(typeof(PostgresSetup))]
-public class MainDbContext : DbContext
+public class PostgresMigrationsDbContext : DbContext, IDbSetupContext<PostgresSetup>
 {
+    public PostgresSetup GetDbSetup()
+    {
+        return new PostgresSetup();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotEnv.LoadStatic();
-        var settings = new PostgresSettings(GetType());
+        var settings = new PostgresSettings();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));
         optionsBuilder.UseNpgsql(connectionString);

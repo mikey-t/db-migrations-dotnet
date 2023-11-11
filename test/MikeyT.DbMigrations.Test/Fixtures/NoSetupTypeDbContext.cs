@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MikeyT.DbMigrations.Test;
+namespace MikeyT.DbMigrations.Test.Fixtures;
 
-// This class is not annotated with DbSetupClassAttribute, so should not be found by the DbContextFinder
+// This test fixture class does not inherit from IDbMigrationsContext. It should still be found
+// by DbContextFinder, but it will not have metadata about the DbSetup type.
 public class NoSetupTypeDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotEnv.LoadStatic();
-        var settings = new PostgresSettings(GetType());
+        var settings = new PostgresSettings();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));
         optionsBuilder.UseNpgsql(connectionString);

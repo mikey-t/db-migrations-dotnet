@@ -7,7 +7,7 @@ public static class Commands
     public const string Setup = "setup";
     public const string Teardown = "teardown";
     public const string List = "list";
-    public const string BootstrapContext = "bootstrapContext";
+    public const string BootstrapContext = "bootstrap";
     public static readonly ImmutableArray<string> AllCommands = ImmutableArray.Create(Setup, Teardown, List, BootstrapContext);
     public static string AllCommandsCommaSeparated { get { return string.Join(", ", AllCommands); } }
 }
@@ -16,7 +16,7 @@ public record DbSetupArgs(string Command, List<DbContextInfo> DbContextInfos);
 
 public record EnvSubstitution(string FromEnvKey, string ToEnvKey);
 
-public record DbContextInfo(Type DbContextType, Type? SetupType, List<EnvSubstitution> EnvSubstitutions);
+public record DbContextInfo(Type DbContextType, Type? SetupType);
 
 public class CliParamException : Exception
 {

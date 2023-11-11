@@ -7,62 +7,97 @@ namespace MikeyT.DbMigrations;
 public class PostgresSetup : DbSetup
 {
     private readonly PostgresSettings _settings;
-    private readonly IConsoleLogger _consoleLogger;
 
-    public PostgresSetup(Type dbContextType) : this(dbContextType, new ConsoleLogger()) { }
+    public PostgresSetup() : this(new PostgresSettings(), new ConsoleLogger()) { }
 
-    public PostgresSetup(Type dbContextType, IConsoleLogger consoleLogger)
+    public PostgresSetup(PostgresEnvKeys envKeys) : this(new PostgresSettings(envKeys), new ConsoleLogger()) { }
+
+    public PostgresSetup(PostgresSettings settings) : this(settings, new ConsoleLogger()) { }
+
+    public PostgresSetup(PostgresSettings settings, IConsoleLogger logger) : base(settings, logger)
     {
-        _settings = new PostgresSettings(dbContextType);
-        _consoleLogger = consoleLogger;
+        _settings = settings;
     }
 
     public override async Task Setup()
     {
-        var rootConnectionString = _settings.GetRootConnectionString();
-        var logSafeRootConnectionString = _settings.GetLogSafeConnectionString(rootConnectionString);
+        var connectionString = _settings.GetDbSetupConnectionString();
+        var logSafeConnectionString = _settings.GetLogSafeConnectionString(connectionString);
 
-        _consoleLogger.WriteLine($"creating database {_settings.DbName} and user {_settings.DbUser} using root connection string: {logSafeRootConnectionString}");
+        var dbName = _settings.GetDbName();
+        var dbUser = _settings.GetDbUser();
+        var dbPassword = _settings.GetDbPassword();
 
-        await using var connection = new NpgsqlConnection(rootConnectionString);
+        Logger.WriteLine($"creating database {dbName} and user {dbUser} using DbSetup connection string: {logSafeConnectionString}");
 
-        await ThrowIfUnsafeRoleOrDbName(connection, _settings.DbUser, _settings.DbName);
+        await using var connection = new NpgsqlConnection(connectionString);
 
-        if (await RoleExists(connection, _settings.DbUser))
+        await ThrowIfUnsafeRoleOrDbName(connection, dbUser, dbName);
+
+        if (await RoleExists(connection, dbUser))
         {
-            _consoleLogger.WriteLine($"role {_settings.DbUser} already exists, skipping");
+            Logger.WriteLine($"role {dbUser} already exists, skipping");
         }
         else
         {
-            await CreateRole(connection, _settings.DbUser, _settings.DbPassword);
-            _consoleLogger.WriteLine($"created role {_settings.DbUser}");
+            await CreateRole(connection, dbUser, dbPassword);
+            Logger.WriteLine($"created role {dbUser}");
         }
 
-        if (await DbExists(connection, _settings.DbName))
+        if (await DbExists(connection, dbName))
         {
-            _consoleLogger.WriteLine($"db {_settings.DbName} already exists, skipping");
+            Logger.WriteLine($"db {dbName} already exists, skipping");
         }
         else
         {
-            await CreateDb(connection, _settings.DbName, _settings.DbUser);
-            _consoleLogger.WriteLine($"created db {_settings.DbName} with owner {_settings.DbUser}");
+            await CreateDb(connection, dbName, dbUser);
+            Logger.WriteLine($"created db {dbName} with owner {dbUser}");
         }
     }
 
     public override async Task Teardown()
     {
-        var rootConnectionString = _settings.GetRootConnectionString();
-        var logSafeRootConnectionString = _settings.GetLogSafeConnectionString(rootConnectionString);
+        var connectionString = _settings.GetDbSetupConnectionString();
+        var logSafeConnectionString = _settings.GetLogSafeConnectionString(connectionString);
 
-        _consoleLogger.WriteLine($"dropping database {_settings.DbName} and user {_settings.DbUser} using root connection string: {logSafeRootConnectionString}");
+        var dbName = _settings.GetDbName();
+        var dbUser = _settings.GetDbUser();
 
-        await using var connection = new NpgsqlConnection(rootConnectionString);
+        Logger.WriteLine($"dropping database {dbName} and user {dbUser} using DbSetup connection string: {logSafeConnectionString}");
 
-        _consoleLogger.WriteLine($"dropping database: {_settings.DbName}");
-        await DropDb(connection, _settings.DbName);
+        await using var connection = new NpgsqlConnection(connectionString);
 
-        _consoleLogger.WriteLine($"dropping role {_settings.DbUser}");
-        await DropRole(connection, _settings.DbUser);
+        Logger.WriteLine($"dropping database: {dbName}");
+        await DropDb(connection, dbName);
+
+        Logger.WriteLine($"dropping role {dbUser}");
+        await DropRole(connection, dbUser);
+    }
+
+    public override string GetDbContextBoilerplate(string dbContextName)
+    {
+        string boilerplate = @"using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace MikeyT.DbMigrations.Test;
+
+[DbSetupClass(typeof(PostgresSetup))]
+public class PlaceholderDbContext : DbContext
+{
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        DotEnv.LoadStatic();
+        var settings = new PostgresSettings(GetType());
+        var connectionString = settings.GetMigrationsConnectionString();
+        Console.WriteLine(""Using connection string: "" + settings.GetLogSafeConnectionString(connectionString));
+        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        MigrationScriptRunner.SetSqlPlaceholderReplacer(new DefaultSqlPlaceholderReplacer());
+    }
+}
+        ";
+
+        return boilerplate.Replace("PlaceholderDbContext", dbContextName);
     }
 
     private static async Task ThrowIfUnsafeRoleOrDbName(NpgsqlConnection connection, string roleName, string dbName)
@@ -86,7 +121,7 @@ public class PostgresSetup : DbSetup
 
         if (!dbExists)
         {
-            _consoleLogger.WriteLine("database does not exist - skipping");
+            Logger.WriteLine("database does not exist - skipping");
             return;
         }
 
@@ -121,14 +156,14 @@ public class PostgresSetup : DbSetup
         var roleExists = await RoleExists(connection, roleName);
         if (!roleExists)
         {
-            _consoleLogger.WriteLine("no role found - skipping");
+            Logger.WriteLine("no role found - skipping");
             return;
         }
 
         var roleHasDependentObjects = await RoleHasDependentObjects(connection, roleName);
         if (roleHasDependentObjects)
         {
-            _consoleLogger.WriteLine("the role has dependent database(s) and will not be dropped (it will be dropped when the last database is dropped if you passed multiple databases to operate on)");
+            Logger.WriteLine("the role has dependent database(s) and will not be dropped (it will be dropped when the last database is dropped if you passed multiple databases to operate on)");
             return;
         }
 

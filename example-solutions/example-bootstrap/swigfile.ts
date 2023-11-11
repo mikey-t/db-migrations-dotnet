@@ -35,8 +35,8 @@ export async function syncEnv() {
   await overwriteEnvFile('.env', path.join(dbMigrationsProjectPath, '.env'))
 }
 
-export const directCli = series(syncEnv, directCliCommand)
+export const callCli = series(syncEnv, directCliCommand)
 
-export async function directCliCommand() {
+async function directCliCommand() {
   await spawnAsync('dotnet', ['run', ...process.argv.slice(3)], { cwd: dbMigrationsProjectPath })
 }

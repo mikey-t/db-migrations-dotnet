@@ -8,6 +8,7 @@ public interface IConsoleLogger
     public void Warn(string message);
     public void Error(string message);
     public void Error(Exception ex);
+    public void Success(string message);
 }
 
 // This is pretty basic - should consider switching over to use Microsoft's ILogger (Microsoft.Extensions.Logging)
@@ -45,6 +46,11 @@ public class ConsoleLogger : IConsoleLogger
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("🛑 " + message);
         Console.ResetColor();
+    }
+
+    public void Success(string message)
+    {
+        Console.WriteLine("✅ " + message);
     }
 
     public void Error(Exception ex)
