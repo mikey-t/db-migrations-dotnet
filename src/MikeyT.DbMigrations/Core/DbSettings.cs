@@ -2,8 +2,18 @@
 
 namespace MikeyT.DbMigrations;
 
+/// <summary>
+/// Implementations should not including anything in their constructors that would cause dynamic instantiation to fail.
+/// Instead, use the <c>Load</c> method to perform any initialization such as loading environment variables.
+/// </summary>
 public abstract class DbSettings
 {
+    /// <summary>
+    /// Implementation must provide a method to load environment variables or perform other initialization.
+    /// This will be called before running setup or teardown commands.
+    /// </summary>
+    public abstract void Load();
+    
     /// <summary>
     /// Implementation must provide a connection string that EntityFramework can use to access the correct database
     /// and change any schema necessary.

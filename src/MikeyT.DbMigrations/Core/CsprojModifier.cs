@@ -2,7 +2,12 @@ using System.Xml.Linq;
 
 namespace MikeyT.DbMigrations;
 
-public class CsprojModifier
+public interface ICsProjModifier
+{
+    public bool EnsureFolderInclude(string csprojPath, string folderIncludePath);
+}
+
+public class CsprojModifier : ICsProjModifier
 {
     private readonly ICsprojAccessor _csprojAccessor;
 

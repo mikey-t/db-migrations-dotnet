@@ -5,12 +5,14 @@ namespace MikeyT.DbMigrations;
 public class DbContextBootstrapper
 {
     private readonly IConsoleLogger _logger;
+    private readonly ICsProjModifier _csProjModifier;
 
-    public DbContextBootstrapper() : this(new ConsoleLogger()) { }
+    public DbContextBootstrapper() : this(new ConsoleLogger(), new CsprojModifier(new CsprojAccessor())) { }
 
-    public DbContextBootstrapper(IConsoleLogger logger)
+    public DbContextBootstrapper(IConsoleLogger logger, ICsProjModifier csProjModifier)
     {
         _logger = logger;
+        _csProjModifier = csProjModifier;
     }
 
     public static bool IsBootstrapCommand(string[] args)
@@ -117,23 +119,55 @@ public class DbContextBootstrapper
         }
 
         _logger.WriteLine($"Instantiating new DbSetup instance ({dbSetupType.Name}) to retrieve boilerplate");
-        var setup = Activator.CreateInstance(dbSetupType);
+        var setup = Activator.CreateInstance(dbSetupType) as DbSetup;
         if (setup == null)
         {
-            _logger.Info("setup ok");
+            throw new Exception("Could not instantiate DbSetup type");
+        }
+
+        var boilerplate = setup.GetDbContextBoilerplate(dbContextName);
+
+        _logger.WriteLine($"creating file: {path}");
+        _logger.WriteLine($"New content for {filename}:\n---");
+        _logger.WriteLine(boilerplate + "\n---\n");
+
+        File.WriteAllText(path, boilerplate);
+    }
+
+    private void EnsureMigrationsFolder(string dbContextName)
+    {
+        string migrationsBaseDirPath = Path.Join(Environment.CurrentDirectory, "Migrations");
+
+        if (!Directory.Exists(migrationsBaseDirPath))
+        {
+            _logger.WriteLine($"creating base migrations directory: {migrationsBaseDirPath}");
+            Directory.CreateDirectory(migrationsBaseDirPath);
+        }
+
+        string relativeMigrationsPath = $"Migrations/{dbContextName}Migrations";
+
+        string migrationsDirPath = Path.Join(Environment.CurrentDirectory, relativeMigrationsPath);
+
+        if (Directory.Exists(migrationsDirPath))
+        {
+            _logger.WriteLine($"migrations directory already exists, skipping: {migrationsDirPath}");
         }
         else
         {
-            _logger.Info("setup is NULL");
+            _logger.WriteLine($"creating migrations subdirectory for new context: {migrationsDirPath}");
+            Directory.CreateDirectory(migrationsDirPath);
         }
-        
-        
-        // _logger.WriteLine($"creating file: {path}");
-        
-    }
 
-    private void EnsureMigrationsFolder(string dbContext)
-    {
+        string? csprojPath = Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").FirstOrDefault();
+        if (csprojPath == null)
+        {
+            _logger.Warn("No csproj file found in current directory - you will have the add the Folder reference manually for the new migrations directory:");
+            _logger.WriteLine($@"<ItemGroup><Folder Include=""{relativeMigrationsPath}"" /></ItemGroup>");
+            return;
+        }
 
+        _logger.WriteLine($"adding Folder reference to csproj file: {csprojPath}");
+
+        _csProjModifier.EnsureFolderInclude(csprojPath, relativeMigrationsPath);
     }
 }

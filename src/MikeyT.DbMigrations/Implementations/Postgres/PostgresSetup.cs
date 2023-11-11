@@ -76,26 +76,12 @@ public class PostgresSetup : DbSetup
 
     public override string GetDbContextBoilerplate(string dbContextName)
     {
-        string boilerplate = @"using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+        string boilerplate = @"using MikeyT.DbMigrations;
 
-namespace MikeyT.DbMigrations.Test;
+namespace DbMigrations;
 
-[DbSetupClass(typeof(PostgresSetup))]
-public class PlaceholderDbContext : DbContext
-{
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        DotEnv.LoadStatic();
-        var settings = new PostgresSettings(GetType());
-        var connectionString = settings.GetMigrationsConnectionString();
-        Console.WriteLine(""Using connection string: "" + settings.GetLogSafeConnectionString(connectionString));
-        optionsBuilder.UseNpgsql(connectionString);
-        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-        MigrationScriptRunner.SetSqlPlaceholderReplacer(new DefaultSqlPlaceholderReplacer());
-    }
-}
-        ";
+public class PlaceholderDbContext : PostgresMigrationsDbContext { }
+";
 
         return boilerplate.Replace("PlaceholderDbContext", dbContextName);
     }

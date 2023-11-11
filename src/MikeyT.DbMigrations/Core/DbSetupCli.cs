@@ -18,7 +18,8 @@ Commands:
   list        List DbContext classes in project along with DbSetup types they use.
   bootstrap   Unlike other commands, pass a single DbContext class name and the name of the
               DbSetup class implementation for the database type you want. For this command
-              the class names should be the full case sensitive names of the classes.
+              the class names should be the full case sensitive names of the classes. The current
+              working directory must be the project directory containing the Migrations project.
   help        Displays this help message.
 
 Options:
@@ -151,6 +152,9 @@ Examples:
             {
                 throw new Exception($@"Unable to dynamically invoke IDbSetupContext method ""GetDbSetup""");
             }
+
+            _logger.WriteLine("Loading settings for DbSetup type");
+            dbSetup.LoadSettings();
 
             if (command == Commands.Setup)
             {

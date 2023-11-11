@@ -15,16 +15,17 @@ public class PostgresSettings : DbSettings
 {
     private readonly IDotEnv _dotEnv;
     private readonly IEnvHelper _envHelper;
+    private readonly PostgresEnvKeys _envKeys;
 
-    private readonly string _dbHost;
-    private readonly string _dbPort;
-    private readonly string _dbRootUser;
-    private readonly string _dbRootPassword;
+    private string _dbHost = string.Empty;
+    private string _dbPort = string.Empty;
+    private string _dbRootUser = string.Empty;
+    private string _dbRootPassword = string.Empty;
 
     // Fields for DbSetup (see Getter methods below)
-    private readonly string _dbName;
-    private readonly string _dbUser;
-    private readonly string _dbPassword;
+    private string _dbName = string.Empty;
+    private string _dbUser = string.Empty;
+    private string _dbPassword = string.Empty;
 
     public PostgresSettings() : this(new PostgresEnvKeys(), new DotEnv(), new EnvHelper()) { }
 
@@ -32,9 +33,13 @@ public class PostgresSettings : DbSettings
 
     public PostgresSettings(PostgresEnvKeys envKeys, IDotEnv dotEnv, IEnvHelper envHelper) : base()
     {
+        _envKeys = envKeys;
         _dotEnv = dotEnv;
         _envHelper = envHelper;
+    }
 
+    public override void Load()
+    {
         _dotEnv.Load();
 
         var defaultEnvKeys = new PostgresEnvKeys
@@ -50,13 +55,13 @@ public class PostgresSettings : DbSettings
 
         var mergedEnvKeys = new PostgresEnvKeys
         {
-            DbHost = envKeys.DbHost ?? defaultEnvKeys.DbHost,
-            DbPort = envKeys.DbPort ?? defaultEnvKeys.DbPort,
-            DbName = envKeys.DbName ?? defaultEnvKeys.DbName,
-            DbUser = envKeys.DbUser ?? defaultEnvKeys.DbUser,
-            DbPassword = envKeys.DbPassword ?? defaultEnvKeys.DbPassword,
-            DbRootUser = envKeys.DbRootUser ?? defaultEnvKeys.DbRootUser,
-            DbRootPassword = envKeys.DbRootPassword ?? defaultEnvKeys.DbRootPassword
+            DbHost = _envKeys.DbHost ?? defaultEnvKeys.DbHost,
+            DbPort = _envKeys.DbPort ?? defaultEnvKeys.DbPort,
+            DbName = _envKeys.DbName ?? defaultEnvKeys.DbName,
+            DbUser = _envKeys.DbUser ?? defaultEnvKeys.DbUser,
+            DbPassword = _envKeys.DbPassword ?? defaultEnvKeys.DbPassword,
+            DbRootUser = _envKeys.DbRootUser ?? defaultEnvKeys.DbRootUser,
+            DbRootPassword = _envKeys.DbRootPassword ?? defaultEnvKeys.DbRootPassword
         };
 
         _dbHost = _envHelper.GetRequiredString(mergedEnvKeys.DbHost);
@@ -92,12 +97,6 @@ public class PostgresSettings : DbSettings
     {
         return _dbPassword;
     }
-
-    // TODO: delete after testing base class implementation
-    // public string GetLogSafeConnectionString(string connectionString)
-    // {
-    //     return connectionString.Replace(DbPassword, "******").Replace(DbRootPassword, "******");
-    // }
 
     private string GetConnectionString(string dbName, string dbUser, string dbPassword)
     {

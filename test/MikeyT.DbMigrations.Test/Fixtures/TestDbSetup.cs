@@ -41,6 +41,10 @@ public class TestDummyDbSettings : DbSettings
     {
         throw new NotImplementedException();
     }
+
+    public override void Load()
+    {
+    }
 }
 
 public class TestDummyDbContext : DbContext, IDbSetupContext<TestDummyDbSetup>

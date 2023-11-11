@@ -5,7 +5,7 @@ namespace MikeyT.DbMigrations;
 
 public class PostgresMigrationsDbContext : DbContext, IDbSetupContext<PostgresSetup>
 {
-    public PostgresSetup GetDbSetup()
+    public virtual PostgresSetup GetDbSetup()
     {
         return new PostgresSetup();
     }
@@ -13,7 +13,8 @@ public class PostgresMigrationsDbContext : DbContext, IDbSetupContext<PostgresSe
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         DotEnv.LoadStatic();
-        var settings = new PostgresSettings();
+        var settings = GetDbSetup().Settings;
+        settings.Load();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));
         optionsBuilder.UseNpgsql(connectionString);
