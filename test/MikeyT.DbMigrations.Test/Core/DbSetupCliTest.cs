@@ -22,16 +22,15 @@ public class DbSetupCliTest
         logger.Received().Error("Missing required first param must be one of the following: setup, teardown, list, bootstrap");
     }
     
-    // [Fact]
-    // [Trait("Category", "only")]
-    // public async Task SetupCommand_MainPassed_DoesStuff()
-    // {
-    //     var logger = Substitute.For<IConsoleLogger>();
-    //     var dbContextFinder = Substitute.For<IDbContextFinder>();
-    //     var dbContextInfo = new DbContextInfo(typeof(TestPostgresDbContext), typeof(PostgresSetup));
-    //     dbContextFinder.GetAllDbContextInfos().Returns(new List<DbContextInfo> { dbContextInfo });
-    //     var result = await new DbSetupCli(logger, dbContextFinder, true).Run(new[] { "setup", "main" });
-    //     Assert.Equal(0, result);
-    //     // logger.Received().Info("Setting up MainDbContext");
-    // }
+    [Theory]
+    [InlineData("setup")]
+    [InlineData("teardown")]
+    public async Task SetupTeardownCommands_TestDummyDbContext_NoErrors(string command)
+    {
+        var dbContextFinder = Substitute.For<IDbContextFinder>();
+        var dbContextInfo = new DbContextInfo(typeof(TestDummyDbContext), typeof(TestDummyDbSetup));
+        dbContextFinder.GetAllDbContextInfos().Returns(new List<DbContextInfo> { dbContextInfo });
+        var result = await new DbSetupCli(Substitute.For<IConsoleLogger>(), dbContextFinder, true).Run(new[] { command, "TestDummyDbContext" });
+        Assert.Equal(0, result);
+    }
 }

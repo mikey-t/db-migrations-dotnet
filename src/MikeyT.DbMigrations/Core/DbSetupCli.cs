@@ -15,7 +15,7 @@ Usage: dotnet run <command> [options]
 Commands:
   setup       Creates the database and roles for the specified DbContext classes.
   teardown    Drops the database and roles for the specified DbContext classes.
-  list        List DbContext classes in project along with some meta data.
+  list        List DbContext classes in project along with DbSetup types they use.
   bootstrap   Unlike other commands, pass a single DbContext class name and the name of the
               DbSetup class implementation for the database type you want. For this command
               the class names should be the full case sensitive names of the classes.
@@ -26,7 +26,8 @@ Options:
                       Names are case-insensitive and the 'DbContext' postfix is optional.
 
 Examples:
-  dotnet run setup application user                   Sets up the databases and user roles for ApplicationDbContext and UserDbContext.
+  dotnet run setup application user                   Sets up the databases and user roles
+                                                      for ApplicationDbContext and UserDbContext.
   dotnet run teardown application                     Tears down the ApplicationDbContext.
   dotnet run bootstrap MainDbContext PostgresSetup    Bootstraps a new DbContext class.
   dotnet run help                                     Displays this help message.

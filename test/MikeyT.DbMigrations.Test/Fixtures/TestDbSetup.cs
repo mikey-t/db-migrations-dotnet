@@ -14,17 +14,19 @@ public class TestDummyDbSetup : DbSetup
 
     public override string GetDbContextBoilerplate(string dbContextName)
     {
-        throw new NotImplementedException();
+        return "TestDummy Boilerplate";
     }
 
     public override Task Setup()
     {
-        throw new NotImplementedException();
+        Logger.WriteLine("TestDummy Setup");
+        return Task.CompletedTask;
     }
 
     public override Task Teardown()
     {
-        throw new NotImplementedException();
+        Logger.WriteLine("TestDummy Teardown");
+        return Task.CompletedTask;
     }
 }
 
@@ -45,6 +47,6 @@ public class TestDummyDbContext : DbContext, IDbSetupContext<TestDummyDbSetup>
 {
     public TestDummyDbSetup GetDbSetup()
     {
-        throw new NotImplementedException();
+        return new TestDummyDbSetup();
     }
 }
