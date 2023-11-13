@@ -14,14 +14,14 @@ public class DbSetupCliTest
     }
 
     [Fact]
-    public async Task NoParams_Returns1AndLogsError()
+    public async Task NoParams_Returns0AndLogsHelpMessage()
     {
         var logger = Substitute.For<IConsoleLogger>();
         var result = await new DbSetupCli(logger, new DbContextFinder()).Run(Array.Empty<string>());
-        Assert.Equal(1, result);
-        logger.Received().Error("Missing required first param must be one of the following: setup, teardown, list, bootstrap");
+        Assert.Equal(0, result);
+        logger.Received().WriteLine(Arg.Is<string>(x => x.Contains("Creates the database and roles")));
     }
-    
+
     [Theory]
     [InlineData("setup")]
     [InlineData("teardown")]

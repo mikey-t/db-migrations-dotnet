@@ -47,6 +47,12 @@ Examples:
     {
         try
         {
+            if (IsHelpCommand(args))
+            {
+                _logger.WriteLine(Help);
+                return 0;
+            }
+
             if (DbContextBootstrapper.IsBootstrapCommand(args))
             {
                 new DbContextBootstrapper().Bootstrap(args);
@@ -165,5 +171,15 @@ Examples:
                 await dbSetup.Teardown();
             }
         }
+    }
+
+    private bool IsHelpCommand(string[] args)
+    {
+        if (args.Length < 1)
+        {
+            return true;
+        }
+        var helpCommands = new List<string>() { "help", "h", "-h", "--help", "/h", "/help" };
+        return helpCommands.Contains(args[0].ToLower());
     }
 }

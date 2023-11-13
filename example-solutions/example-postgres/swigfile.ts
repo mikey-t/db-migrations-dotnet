@@ -17,7 +17,7 @@ const dockerProjectName = 'dbmigrationsexample'
 const dockerDbContainerName = 'dbmigrationsexample_postgres'
 const mainDbContextName = 'MainDbContext'
 
-efConfig.init('postgres', dbMigrationsPath, [{ name: 'MainDbContext', cliKey: 'main', useWhenNoContextSpecified: true }])
+efConfig.init(dbMigrationsPath, [{ name: 'MainDbContext', cliKey: 'main', useWhenNoContextSpecified: true }])
 
 export * from 'swig-cli-modules/EntityFramework'
 export * from 'swig-cli-modules/DockerCompose'
