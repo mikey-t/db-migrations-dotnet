@@ -3,6 +3,7 @@ using ExampleApi.Data;
 using ExampleApi.Logic;
 using ExampleApi.Model;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ExampleApi.Controllers;
 
@@ -25,6 +26,7 @@ public class PersonController : ControllerBase
 
     [HttpGet("random")]
     [ProducesResponseType(typeof(Person), (int)HttpStatusCode.OK)]
+    [SwaggerOperation(Description = "Get's a random Person object from memory. This does not pull from the database - it's just a placeholder endpoint to ensure the service is up and running. See the GetAll method for getting users from the database.")]
     public IActionResult GetRandom()
     {
         var nameLogic = new NameLogic();
@@ -38,9 +40,10 @@ public class PersonController : ControllerBase
 
         return Ok(person);
     }
-    
+
     [HttpPut("random/{num:int}")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
+    [SwaggerOperation(Description = "Generate {num} random Person objects and save them to the database.")]
     public async Task<IActionResult> SaveRandomPeople(int num)
     {
         if (num is < 1 or > 10)
@@ -56,12 +59,13 @@ public class PersonController : ControllerBase
                 LastName = _nameLogic.GetRandomLastName()
             });
         }
-        
+
         return Ok();
     }
 
     [HttpGet("all")]
     [ProducesResponseType(typeof(List<Person>), (int)HttpStatusCode.OK)]
+    [SwaggerOperation(Description = "Get all users from the database.")]
     public async Task<IActionResult> GetAll()
     {
         var people = await _repo.GetAll();
@@ -70,6 +74,7 @@ public class PersonController : ControllerBase
 
     [HttpDelete("all")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [SwaggerOperation(Description = "Delete all users from the database.")]
     public async Task<IActionResult> DeleteAll()
     {
         await _repo.DeleteAll();

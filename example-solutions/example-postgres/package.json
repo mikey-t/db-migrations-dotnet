@@ -6,8 +6,8 @@
   "author": "Michael Thompson",
   "license": "MIT",
   "devDependencies": {
-    "@mikeyt23/node-cli-utils": "^2.0.15",
-    "@types/node": "^18.18.7",
+    "@mikeyt23/node-cli-utils": "^2.0.17",
+    "@types/node": "^18.18.9",
     "swig-cli": "^0.0.15",
     "swig-cli-modules": "^0.0.18",
     "tsx": "^3.14.0",

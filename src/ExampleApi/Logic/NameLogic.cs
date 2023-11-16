@@ -12,19 +12,19 @@ public class NameLogic : INameLogic
     private const string FirstNamesFilename = "FirstNames.txt";
     private const string LastNamesFilename = "LastNames.txt";
 
-    public List<string> AllFirstNames = new List<string>();
-    public List<string> AllLastNames = new List<string>();
+    public List<string> AllFirstNames = Names.FirstNames;
+    public List<string> AllLastNames = Names.LastNames;
     
     public NameLogic()
     {
-        PopulateNamesFromFiles();
+        // PopulateNamesFromFiles();
     }
 
-    private void PopulateNamesFromFiles()
-    {
-        AllFirstNames = File.ReadAllLines(FirstNamesFilename).ToList();
-        AllLastNames = File.ReadAllLines(LastNamesFilename).ToList();
-    }
+    // private void PopulateNamesFromFiles()
+    // {
+    //     AllFirstNames = File.ReadAllLines(FirstNamesFilename).ToList();
+    //     AllLastNames = File.ReadAllLines(LastNamesFilename).ToList();
+    // }
 
     public string GetRandomFirstName()
     {

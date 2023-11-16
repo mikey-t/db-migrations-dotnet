@@ -13,7 +13,7 @@ efConfig.init(
   dbMigrationsProjectPath,
   [
     { name: 'MainDbContext', cliKey: 'main', useWhenNoContextSpecified: true, dbSetupType: 'PostgresSetup' },
-    { name: 'TestDbContext', cliKey: 'test', useWhenNoContextSpecified: true }
+    { name: 'TestDbContext', cliKey: 'test', useWhenNoContextSpecified: true, dbSetupType: 'PostgresSetup' }
   ]
 )
 
@@ -21,12 +21,11 @@ export * from 'swig-cli-modules/DockerCompose'
 
 export { dbAddMigration, dbListMigrations, dbMigrate, dbRemoveMigration } from 'swig-cli-modules/EntityFramework'
 
-export const bootstrapMigrationsProject = series(dbBootstrapMigrationsProject, convertNugetReferenceToProjectReference)
+export const bootstrapMigrationsProject = series(dbBootstrapMigrationsProject, convertNugetReferenceToProjectReference, syncEnv)
 
 export async function deleteMigrationsProject() {
   if (!fs.existsSync(dbMigrationsProjectPath)) {
     log('project does not exist - exiting')
-
   }
 
   log('removing sln reference')

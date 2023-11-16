@@ -19,7 +19,6 @@ public class PersonRepository : BaseRepository, IPersonRepository
     {
     }
 
-
     public async Task<int> AddPerson(Person person)
     {
         await using var connection = new NpgsqlConnection(ConnectionString);

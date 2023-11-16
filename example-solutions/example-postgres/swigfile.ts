@@ -1,26 +1,16 @@
-import { series } from 'swig-cli'
-import { copyNewEnvValues, log, overwriteEnvFile, spawnAsync } from '@mikeyt23/node-cli-utils'
-import path from 'node:path'
-import fs from 'node:fs'
+import { copyNewEnvValues, overwriteEnvFile, spawnAsyncLongRunning } from '@mikeyt23/node-cli-utils'
 import fsp from 'node:fs/promises'
+import path from 'node:path'
+import { series } from 'swig-cli'
 import efConfig from 'swig-cli-modules/ConfigEntityFramework'
 
-// "dbInitialCreate": "gulp dbInitialCreate",
-// "dbDropAll": "gulp dbDropAll",
-// "dbDropAndRecreate": "gulp dbDropAndRecreate",
-// "api": "dotnet watch --project ./src/ExampleApi/ExampleApi.csproj",
-// "packageDbMigrator": "gulp packageDbMigrator"
-
-const appPath = './src/ExampleApi'
+const appPath = 'src/ExampleApiWrapper'
 const dbMigrationsPath = 'src/DbMigrations'
-const dockerProjectName = 'dbmigrationsexample'
-const dockerDbContainerName = 'dbmigrationsexample_postgres'
-const mainDbContextName = 'MainDbContext'
 
-efConfig.init(dbMigrationsPath, [{ name: 'MainDbContext', cliKey: 'main', useWhenNoContextSpecified: true }])
+efConfig.init(dbMigrationsPath, [{ name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true }])
 
-export * from 'swig-cli-modules/EntityFramework'
 export * from 'swig-cli-modules/DockerCompose'
+export * from 'swig-cli-modules/EntityFramework'
 
 export async function syncEnvFiles() {
   await copyNewEnvValues('.env.template', '.env')
@@ -28,48 +18,18 @@ export async function syncEnvFiles() {
   await overwriteEnvFile('.env', path.join(dbMigrationsPath, '.env'))
 }
 
+// Run the API project
+export const run = series(syncEnvFiles, runApp)
+
+// Run this first if you've never used dotnet-ef global tool or if it's been a while
 export { installOrUpdateDotnetEfTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
 
-
-// export async function dbInitialCreate() {
-//   await ensureDbMigratorSetup()
-// }
-
+// For quickly testing bootstrapping of a new DbMigrations project
 export async function deleteMigrationsProject() {
   await fsp.rm(dbMigrationsPath, { recursive: true, force: true })
 }
 
-export async function copyCsproj() {
-  const csprojPath = path.join(efConfig.dbMigrationsProjectPath!, `${efConfig.dbMigrationsProjectName}.csproj`)
-  const backupPath = csprojPath + '.backup'
-  await fsp.copyFile(csprojPath, backupPath)
+async function runApp() {
+  await spawnAsyncLongRunning('dotnet', ['watch'], appPath)
 }
 
-export async function revertCsproj() {
-  const csprojPath = path.join(efConfig.dbMigrationsProjectPath!, `${efConfig.dbMigrationsProjectName}.csproj`)
-  const backupPath = csprojPath + '.backup'
-  await fsp.copyFile(backupPath, csprojPath)
-}
-
-export async function copyProgram() {
-  const programPath = path.join(efConfig.dbMigrationsProjectPath!, 'Program.cs')
-  const backupPath = programPath + '.backup'
-  await fsp.copyFile(programPath, backupPath)
-}
-
-export async function revertProgram() {
-  const programPath = path.join(efConfig.dbMigrationsProjectPath!, 'Program.cs')
-  const backupPath = programPath + '.backup'
-  await fsp.copyFile(backupPath, programPath)
-}
-
-export const dbSetupCommand = series(syncEnvFiles, doDbSetupCommand)
-
-async function doDbSetupCommand() {
-  const command = process.argv[3]
-  if (!command) {
-    log(`error - no command passed (setup, teardown, list)`)
-    return
-  }
-  await spawnAsync('dotnet', ['run', '--project', dbMigrationsPath, command, ...process.argv.slice(4)])
-}

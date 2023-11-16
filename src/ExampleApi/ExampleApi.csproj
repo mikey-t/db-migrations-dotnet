@@ -11,17 +11,7 @@
     <PackageReference Include="MikeyT.EnvironmentSettings" Version="0.2.1" />
     <PackageReference Include="Npgsql" Version="6.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="FirstNames.txt" />
-    <Content Include="FirstNames.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="LastNames.txt" />
-    <Content Include="LastNames.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
   </ItemGroup>
 
 </Project>
