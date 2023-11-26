@@ -13,7 +13,7 @@ public abstract class DbSettings
     /// This will be called before running setup or teardown commands.
     /// </summary>
     public abstract void Load();
-    
+
     /// <summary>
     /// Implementation must provide a connection string that EntityFramework can use to access the correct database
     /// and change any schema necessary.

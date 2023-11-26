@@ -14,8 +14,6 @@ public static class Commands
 
 public record DbSetupArgs(string Command, List<DbContextInfo> DbContextInfos);
 
-public record EnvSubstitution(string FromEnvKey, string ToEnvKey);
-
 public record DbContextInfo(Type DbContextType, Type? SetupType);
 
 public class CliParamException : Exception

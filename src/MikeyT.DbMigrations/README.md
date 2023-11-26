@@ -2,7 +2,7 @@
 
 This Nuget package contains:
 
-- `DbSetupCli` class that exposes commands `initialCreate` and `dropAll`
+- `DbSetupCli` class that exposes commands `setup`, `teardown`, `list`, and `bootstrap` (see project readme for more info: https://github.com/mikey-t/db-migrations-dotnet)
 - `MigrationScriptRunner` class to be used for running pure SQL migrations with simple placeholder replacement
 
 ## See Also

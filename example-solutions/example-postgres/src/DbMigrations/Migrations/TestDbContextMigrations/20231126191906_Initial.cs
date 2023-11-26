@@ -3,18 +3,18 @@ using MikeyT.DbMigrations;
 
 #nullable disable
 
-namespace DbMigrations.Migrations.MainDbContextMigrations
+namespace DbMigrations.Migrations.TestDbContextMigrations
 {
-    public partial class AddPerson : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            MigrationScriptRunner.RunScript(migrationBuilder, "AddPerson.sql");
+            MigrationScriptRunner.RunScript(migrationBuilder, "Test/Initial.sql");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            MigrationScriptRunner.RunScript(migrationBuilder, "AddPerson_Down.sql");
+            MigrationScriptRunner.RunScript(migrationBuilder, "Test/Initial_Down.sql");
         }
     }
 }

@@ -8,18 +8,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DbMigrations.Migrations.MainDbContextMigrations
+namespace DbMigrations.Migrations.TestDbContextMigrations
 {
-    [DbContext(typeof(MainDbContext))]
-    [Migration("20231114001416_Initial")]
-    partial class Initial
+    [DbContext(typeof(TestDbContext))]
+    [Migration("20231126191925_AddPerson")]
+    partial class AddPerson
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

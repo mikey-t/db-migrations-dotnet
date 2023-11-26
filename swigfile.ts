@@ -114,15 +114,11 @@ export async function cleanProject() {
 
 function oneOfArgsPassed(...argNames: string[]) {
   for (const argName of argNames) {
-    if (argPassed(argName)) {
+    if (process.argv.slice(3).includes(argName)) {
       return true
     }
   }
   return false
-}
-
-function argPassed(argName: string) {
-  return process.argv.slice(3).includes(argName)
 }
 
 async function buildDbMigrations() {

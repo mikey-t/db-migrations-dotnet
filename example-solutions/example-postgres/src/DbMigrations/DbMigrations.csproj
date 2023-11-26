@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -23,6 +23,6 @@
     <Folder Include="Migrations/MainDbContextMigrations" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations/ExampleDbContextMigrations" />
+    <Folder Include="Migrations/TestDbContextMigrations" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ public class DbContextBootstrapper
     {
         if (args.Length < 3)
         {
-            throw new CliParamException("The bootstrap command expects 2 parameters: DbContext name and DbSetup class name");
+            throw new CliParamException("The bootstrap command expects at least 2 parameters: DbContext name and DbSetup class name");
         }
 
         // This is the "migrations" assembly (not the lib, but the implementation console app project it's being called in)
@@ -35,6 +35,15 @@ public class DbContextBootstrapper
 
         EnsureClass(contextName, setupType);
         EnsureMigrationsFolder(contextName);
+
+        if (args.Length > 2)
+        {
+            var scriptsSubdirectory = ValidateScriptsSubdirectory(args[3]);
+            if (scriptsSubdirectory != null)
+            {
+                EnsureScriptsSubdirectory(scriptsSubdirectory);
+            }
+        }
     }
 
     private string ValidateDbContextName(string contextName, Assembly entryAssembly)
@@ -87,6 +96,20 @@ public class DbContextBootstrapper
         return setupType;
     }
 
+    private static string? ValidateScriptsSubdirectory(string scriptsSubdirectory)
+    {
+        if (string.IsNullOrWhiteSpace(scriptsSubdirectory))
+        {
+            return null;
+        }
+        var invalidChars = new[] { '"', '\'', '/', '\\', ' ' };
+        if (scriptsSubdirectory.Any(c => invalidChars.Contains(c)))
+        {
+            throw new CliParamException($@"The scripts subdirectory contains invalid characters: ""{scriptsSubdirectory}""");
+        }
+        return scriptsSubdirectory;
+    }
+
     // Order of precedence: entry assembly -> lib assembly
     private Type? GetSetupType(string className, Assembly entryAssembly, Assembly libAssembly)
     {
@@ -119,8 +142,7 @@ public class DbContextBootstrapper
         }
 
         _logger.WriteLine($"Instantiating new DbSetup instance ({dbSetupType.Name}) to retrieve boilerplate");
-        var setup = Activator.CreateInstance(dbSetupType) as DbSetup;
-        if (setup == null)
+        if (Activator.CreateInstance(dbSetupType) is not DbSetup setup)
         {
             throw new Exception("Could not instantiate DbSetup type");
         }
@@ -169,5 +191,28 @@ public class DbContextBootstrapper
         _logger.WriteLine($"adding Folder reference to csproj file: {csprojPath}");
 
         _csProjModifier.EnsureFolderInclude(csprojPath, relativeMigrationsPath);
+    }
+
+    private void EnsureScriptsSubdirectory(string scriptsSubdirectory)
+    {
+        string scriptsBaseDirPath = Path.Join(Environment.CurrentDirectory, "Scripts");
+
+        if (!Directory.Exists(scriptsBaseDirPath))
+        {
+            _logger.WriteLine($"creating Scripts directory: {scriptsBaseDirPath}");
+            Directory.CreateDirectory(scriptsBaseDirPath);
+        }
+
+        string scriptsSubdirectoryPath = Path.Join(Environment.CurrentDirectory, "Scripts", scriptsSubdirectory);
+
+        if (Directory.Exists(scriptsSubdirectoryPath))
+        {
+            _logger.WriteLine($"scripts subdirectory already exists, skipping: {scriptsSubdirectoryPath}");
+        }
+        else
+        {
+            _logger.WriteLine($"creating scripts subdirectory: {scriptsSubdirectoryPath}");
+            Directory.CreateDirectory(scriptsSubdirectoryPath);
+        }
     }
 }

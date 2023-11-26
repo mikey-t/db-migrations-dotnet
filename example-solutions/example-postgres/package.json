@@ -6,12 +6,12 @@
   "author": "Michael Thompson",
   "license": "MIT",
   "devDependencies": {
-    "@mikeyt23/node-cli-utils": "^2.0.17",
-    "@types/node": "^18.18.9",
+    "@mikeyt23/node-cli-utils": "^2.0.19",
+    "@types/node": "^18.18.13",
     "swig-cli": "^0.0.15",
-    "swig-cli-modules": "^0.0.18",
-    "tsx": "^3.14.0",
-    "typescript": "^5.2.2"
+    "swig-cli-modules": "^0.1.1",
+    "tsx": "^4.5.0",
+    "typescript": "^5.3.2"
   },
   "volta": {
     "node": "18.18.2"

@@ -5,16 +5,16 @@ using MikeyT.DbMigrations;
 
 namespace DbMigrations.Migrations.MainDbContextMigrations
 {
-    public partial class Initial : Migration
+    public partial class AddPerson : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            MigrationScriptRunner.RunScript(migrationBuilder, "Initial.sql");
+            MigrationScriptRunner.RunScript(migrationBuilder, "Main/AddPerson.sql");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            MigrationScriptRunner.RunScript(migrationBuilder, "Initial_Down.sql");
+            MigrationScriptRunner.RunScript(migrationBuilder, "Main/AddPerson_Down.sql");
         }
     }
 }
