@@ -45,7 +45,7 @@ export async function test(withCoverageReportOverride = false) {
   } else {
     result = await spawnAsync('dotnet', ['test', ...verboseFlags, ...onlyFlags, ...coverageArgs], { cwd: testProjectPath })
   }
-  
+
   if (result.code !== 0) {
     throw new Error('Tests failed')
   }
