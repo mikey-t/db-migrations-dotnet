@@ -36,8 +36,9 @@ public class DbContextBootstrapper
         EnsureClass(contextName, setupType);
         EnsureMigrationsFolder(contextName);
 
-        if (args.Length > 2)
+        if (args.Length > 3)
         {
+            _logger.WriteLine("a fourth arg was passed for the scripts subdirectory - attempting to validate and create directory");
             var scriptsSubdirectory = ValidateScriptsSubdirectory(args[3]);
             if (scriptsSubdirectory != null)
             {

@@ -30,3 +30,23 @@ Swig test command reminders:
 Unit test coverage is output to `./coverage`. When running tests with the `coverage` and `report` options, a message will be logged with a link to the html file (currently this is coverage/index.html).
 
 The VSCode extension [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters) seems to work pretty well for showing coverage info inline.
+
+## Project Reference
+
+When troubleshooting a live project that references the MikeyT.DbMigrations Nuget package, it's helpful to switch the package reference to a local project reference:
+
+```
+dotnet remove package MikeyT.DbMigrations
+```
+
+Add to csproj instead:
+
+```
+<ItemGroup>
+  <ProjectReference Include="C:\path\to\db-migrations-dotnet\src\MikeyT.DbMigrations\MikeyT.DbMigrations.csproj" />
+</ItemGroup>
+```
+
+```
+dotnet build
+```
