@@ -7,28 +7,41 @@ import efConfig from 'swig-cli-modules/ConfigEntityFramework'
 import { dockerDown, dockerUp } from 'swig-cli-modules/DockerCompose'
 import { dbBootstrapMigrationsProject, dbSetup } from 'swig-cli-modules/EntityFramework'
 
-const appPath = 'src/ExampleApiWrapper'
+const exampleApiPath = 'src/ExampleApiWrapper'
 const dbMigrationsProjectPath = 'src/DbMigrations'
 
+// Simple example with one DbContext
 efConfig.init(dbMigrationsProjectPath, [
-  { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Main' },
-  { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Test' }
+  { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true }
 ])
+
+// Example with 2 DbContexts (2 databases)
+// efConfig.init(dbMigrationsProjectPath, [
+//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true },
+//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true }
+// ])
+
+// Example with 2 DbContexts (2 databases) that use different sql scripts in segregated subdirectories
+// efConfig.init(dbMigrationsProjectPath, [
+//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Main' },
+//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Test' }
+// ])
 
 export * from 'swig-cli-modules/DockerCompose'
 export * from 'swig-cli-modules/EntityFramework'
 
 export async function syncEnvFiles() {
   await copyNewEnvValues('.env.template', '.env')
-  await overwriteEnvFile('.env', path.join(appPath, '.env'))
-  await overwriteEnvFile('.env', path.join(dbMigrationsProjectPath, '.env'))
+  if (fs.existsSync(exampleApiPath)) {
+    await overwriteEnvFile('.env', path.join(exampleApiPath, '.env'))
+  }
+  if (fs.existsSync(dbMigrationsProjectPath)) {
+    await overwriteEnvFile('.env', path.join(dbMigrationsProjectPath, '.env'))
+  }
 }
 
-// Run the API project
-export const run = series(syncEnvFiles, runApp)
-
-// Run this first if you've never used dotnet-ef global tool or if it's been a while
-export { installOrUpdateDotnetEfTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
+// Run the ExampleApi project
+export const run = series(syncEnvFiles, runExampleApi)
 
 // For quickly testing bootstrapping of a new DbMigrations project
 export async function deleteMigrationsProject() {
@@ -45,31 +58,34 @@ export async function deleteMigrationsProject() {
   await spawnAsync('docker', ['volume', 'remove', 'example-postgres_postgresql_data'], { throwOnNonZero: false, stdio: 'pipe' })
 }
 
-// If trying out multiple DbContexts, don't forget to mod any with different database names, for example:
+// You can just run "dbBootstrapMigrationsProject", but this is an example of how to automate the next steps (env files, dockerUp, dbSetup).
+// Also converts the nuget reference to a project reference for easy testing of changes to the DbSetupCli C# lib.
+//
+// If trying out multiple DbContexts, don't forget to modify each with different database names by changing what env vars are evaluated, for example:
 // public class TestDbContext : PostgresMigrationsDbContext
 // {
 //     public override PostgresSetup GetDbSetup()
 //     {
-//         return new PostgresSetup(new PostgresEnvKeys { DbName = "DB_NAME_TEST" });
+//         return new PostgresSetup(new PostgresEnvKeys { DbNameKey = "DB_NAME_TEST" });
 //     }
 // }
-// See documentation in db-migrations-dotnet project for additional next steps
 export const bootstrapMigrationsProject = series(
   dbBootstrapMigrationsProject,
   convertNugetReferenceToProjectReference,
   syncEnvFiles,
-  dockerUp
+  dockerUp,
+  dbSetup
 )
 
-async function runApp() {
-  await spawnAsyncLongRunning('dotnet', ['watch'], appPath)
-}
-
-async function convertNugetReferenceToProjectReference() {
+export async function convertNugetReferenceToProjectReference() {
   const result = await spawnAsync('dotnet', ['remove', 'package', 'MikeyT.DbMigrations'], { cwd: dbMigrationsProjectPath, throwOnNonZero: false, stdio: 'pipe' })
   if (result.code !== 0) {
     log(`failed to remove package - assuming it's already been converted to a project reference`)
     return
   }
   await spawnAsync('dotnet', ['add', 'reference', '../../../../src/MikeyT.DbMigrations'], { cwd: dbMigrationsProjectPath, throwOnNonZero: true })
+}
+
+async function runExampleApi() {
+  await spawnAsyncLongRunning('dotnet', ['watch'], exampleApiPath)
 }

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace MikeyT.DbMigrations;

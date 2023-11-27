@@ -2,16 +2,7 @@
 
 The db-migrations-dotnet project describes a process for managing database migrations in a dotnet project using EntityFramework with plain SQL files.
 
-In addition to documenting the process, this project provides a set of scripting tools and examples to streamline the process and provide missing setup/teardown functionality.
-
-This repository contains:
-
-- High level process documentation
-- Nuget package to be imported as a dependency in a C# console project: [MikeyT.DbMigrations](https://www.nuget.org/packages/MikeyT.DbMigrations/)
-- Example solutions for several database types
-
-Dependent external projects:
-- NodeJS scripting via [swig-cli](https://github.com/mikey-t/swig) and [swig-cli-modules](https://github.com/mikey-t/swig-cli-modules)
+In addition to documenting the process, this project provides a set of scripting tools and examples to streamline the process in addition to providing database setup and teardown automation.
 
 ## Project Goals
 
@@ -19,9 +10,9 @@ For a detailed list of project goals, see [ProjectGoals.md](./docs/ProjectGoals.
 
 ## Documentation
 
-For getting started, see [GettingStarted.md](./docs/GettingStarted.md).
+For getting started, see [Getting Started](./docs/GettingStarted.md).
 
-For detailed documentation, see [DbMigrationsDotnetDocumentation.md](./docs/DbMigrationsDotnetDocumentation.md).
+For detailed documentation, see [DbMigrationsDotnet](./docs/DbMigrationsDotnet.md).
 
 ## Supported Databases
 

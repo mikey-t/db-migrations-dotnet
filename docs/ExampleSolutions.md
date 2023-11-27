@@ -18,21 +18,23 @@ For each example project, these are the general initial setup steps:
 - Ensure .NET 6 SDK is installed
 - Ensure Node.js is installed (>= 18)
 - Ensure Docker is installed and running
+- Install swig globally if you haven't already: `npm i -g swig-cli@latest`
 - Install npm dependencies: `npm install`
-- Ensure you have the latest `dotnet-ef` tool installed: `swig installOrUpdateDotnetEfTool`
 - Optional: copy `.env.template` to `.env` and modify values
+  - Make sure you don't have another database running on the same port - update the `.env` if needed
 - Startup the database container: `swig dockerUp`
+- Ensure the database has it's application user and schema created: `swig dbSetup`
 - Ensure database is up to date by running migrations: `swig dbMigrate`
 - Start the example .NET WebApi project: `swig run`
-- Browse to the running service's swagger API
+- Browse to the running service's swagger API (the root URL is configured to serve this)
 
 ## Other Things To Try
 
-### List Swig Tasks
+### Try listing swig tasks
 
 Get a list of all the available swig commands by simply running `swig` in a shell in an example project's root directory.
 
-### Try Other DB Swig Commands
+### Try other DB swig commands
 
 Try experimenting with the other available `swig` commands that wrap EF migration commands:
 
@@ -43,7 +45,7 @@ dbRemoveMigration
 dbMigrate
 ```
 
----
+### Try bootstrapping a new DbContext
 
 In the `example-postgres` project, try bootstrapping a new DbContext by running something like this:
 
@@ -62,7 +64,7 @@ public class TestDbContext : PostgresMigrationsDbContext
 {
     public override PostgresSetup GetDbSetup()
     {
-        return new PostgresSetup(new PostgresEnvKeys { DbName = "DB_NAME_TEST" });
+        return new PostgresSetup(new PostgresEnvKeys { DbNameKey = "DB_NAME_TEST" });
     }
 }
 ```
@@ -101,6 +103,55 @@ swig dbMigrate
 
 This would allow you to have a unit test project that points to a test version of the database. This is very useful for allowing you to perform destructive operations on your database during integration-style tests that access a real database without affecting your main database's data. This strategy will keep any data you've seeded or manually accumulated on your development machine from getting destroyed, while still allowing you to setup and configure the database in any way necessary during unit tests, so that you can test many types of edge cases.
 
----
+### Try bootstrapping a whole new DbMigrations project
 
-In a new .NET project without database migrations, try bootstrapping a DB migrations project using the `dbBootstrapMigrationsProject` swig task - see [./NewProjectSetup.md](./NewProjectSetup.md) for details.
+In a new .NET project without database migrations, try bootstrapping a DB migrations project using the `dbBootstrapMigrationsProject` swig task - see [GettingStarted](./GettingStarted.md) for details.
+
+## How To Create a New Example Solution
+
+Pre-requisite C# class implementations for the database engine type (these can be added to or referenced in the DbMigrations project after it is bootstrapped, or added to the MikeyT.DbMigrations package itself):
+
+- `MikeyT.DbSetup`
+- `MikeyT.DbSettings`
+- `MikeyT.IDbSetupContext`
+
+For example implementations of these classes, see the PostgreSQL versions under the directory [../src/MikeyT.DbMigrations/Implementations/Postgres/](../src/MikeyT.DbMigrations/Implementations/Postgres/).
+
+Setup steps:
+
+- Create a new directory under `example-solutions`
+- Create a src dir for an API project and the DbMigrations project: `mkdir src`
+- Create a dotnet solution file from that new solution's root directory: `dotnet new sln`
+- Follow all the [GettingStarted](./GettingStarted.md) instructions for setting up the root solution directory
+- Replace the `docker-compose.yml` with a version appropriate for your new DB engine
+- Copy the contents of the `example-postgres` solution's `swigfile.ts` into the new solution directory and replace the `dbSetupType` value in your config for the EF swig module in your - replace `PostgresSetup` with your new implementation class name
+- Create a `.env.template` file in the root of the new solution that has the environment values necessary for your `DbSettings` implementation
+- Create an empty dotnet web project: `dotnet new web -o ./src/ExampleApiWrapper`
+- Add the API wrapper project to the solution: `dotnet sln add ./src/ExampleApiWrapper`
+- Navigate to the API wrapper project and add a reference back to the main example API: `dotnet add reference ..\..\..\..\src\ExampleApi`
+- Replace the API project's `Program.cs`:
+  ```csharp
+  using ExampleApi;
+
+  ExampleApiService.Run(args);
+  ```
+- Bootstrap the DbMigrations project: `swig bootstrapMigrationsProject`
+- Setup the DB: `swig dbSetup`
+- Add an empty initial migration: `swig dbAddMigration Initial`
+- Create "up" and "down" sql file in the root of the solution that can be used to copy into the auto generated migration files - must match the Person object in the example API project:
+  ```csharp
+  public class Person
+  {
+      public int Id { get; set; }
+      public string FirstName { get; set; } = string.Empty;
+      public string LastName { get; set; } = string.Empty;
+  }
+  ```
+- Create the migration for the Person object: `swig dbAddMigration AddPerson`
+- Copy the sql into the auto-generated sql scripts in the DbMigrations project
+- Migrate the DB: `swig dbMigrate`
+
+Verify setup:
+
+- `swig run`
+- Try "put" and "get all" endpoints at `http://localhost:7070` (or whatever port was configured in the .env)

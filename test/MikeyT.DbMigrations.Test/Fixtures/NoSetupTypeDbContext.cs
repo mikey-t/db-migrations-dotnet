@@ -9,7 +9,6 @@ public class NoSetupTypeDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        DotEnv.LoadStatic();
         var settings = new PostgresSettings();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));

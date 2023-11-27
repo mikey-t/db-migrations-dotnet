@@ -12,9 +12,7 @@ public class PostgresMigrationsDbContext : DbContext, IDbSetupContext<PostgresSe
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        DotEnv.LoadStatic();
         var settings = GetDbSetup().Settings;
-        settings.Load();
         var connectionString = settings.GetMigrationsConnectionString();
         Console.WriteLine("Using connection string: " + settings.GetLogSafeConnectionString(connectionString));
         optionsBuilder.UseNpgsql(connectionString);

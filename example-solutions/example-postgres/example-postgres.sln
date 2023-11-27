@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleApiWrapper", "src\ExampleApiWrapper\ExampleApiWrapper.csproj", "{26EDA7D7-C9C4-4E43-841B-57BB1CFD522F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbMigrations", "src\DbMigrations\DbMigrations.csproj", "{56AA2549-1834-42BA-9078-4034624B1FBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbMigrations", "src\DbMigrations\DbMigrations.csproj", "{D0E689D9-BD92-4E24-8FF4-B8198222E948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,13 +35,13 @@ Global
 		{26EDA7D7-C9C4-4E43-841B-57BB1CFD522F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26EDA7D7-C9C4-4E43-841B-57BB1CFD522F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26EDA7D7-C9C4-4E43-841B-57BB1CFD522F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56AA2549-1834-42BA-9078-4034624B1FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56AA2549-1834-42BA-9078-4034624B1FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56AA2549-1834-42BA-9078-4034624B1FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56AA2549-1834-42BA-9078-4034624B1FBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E689D9-BD92-4E24-8FF4-B8198222E948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E689D9-BD92-4E24-8FF4-B8198222E948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E689D9-BD92-4E24-8FF4-B8198222E948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E689D9-BD92-4E24-8FF4-B8198222E948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{26EDA7D7-C9C4-4E43-841B-57BB1CFD522F} = {49BFA41A-D44A-471C-84B2-434E66B6A6AD}
-		{56AA2549-1834-42BA-9078-4034624B1FBA} = {49BFA41A-D44A-471C-84B2-434E66B6A6AD}
+		{D0E689D9-BD92-4E24-8FF4-B8198222E948} = {49BFA41A-D44A-471C-84B2-434E66B6A6AD}
 	EndGlobalSection
 EndGlobal

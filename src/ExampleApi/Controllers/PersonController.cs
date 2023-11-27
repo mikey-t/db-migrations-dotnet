@@ -46,9 +46,9 @@ public class PersonController : ControllerBase
     [SwaggerOperation(Description = "Generate {num} random Person objects and save them to the database.")]
     public async Task<IActionResult> SaveRandomPeople(int num)
     {
-        if (num is < 1 or > 10)
+        if (num is < 1 or > 50)
         {
-            return BadRequest("Num must be between 1 and 10");
+            return BadRequest("Num must be between 1 and 50");
         }
 
         for (var i = 0; i < num; i++)

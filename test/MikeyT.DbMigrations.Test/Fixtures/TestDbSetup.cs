@@ -32,12 +32,12 @@ public class TestDummyDbSetup : DbSetup
 
 public class TestDummyDbSettings : DbSettings
 {
-    public override string GetDbSetupConnectionString()
+    protected override string GetDbSetupConnectionStringImpl()
     {
         throw new NotImplementedException();
     }
 
-    public override string GetMigrationsConnectionString()
+    protected override string GetMigrationsConnectionStringImpl()
     {
         throw new NotImplementedException();
     }

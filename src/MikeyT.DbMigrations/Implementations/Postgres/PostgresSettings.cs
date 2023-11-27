@@ -2,83 +2,61 @@
 
 public class PostgresEnvKeys
 {
-    public string? DbHost { get; set; }
-    public string? DbPort { get; set; }
-    public string? DbName { get; set; }
-    public string? DbUser { get; set; }
-    public string? DbPassword { get; set; }
-    public string? DbRootUser { get; set; }
-    public string? DbRootPassword { get; set; }
+    public string DbHostKey { get; set; } = "DB_HOST";
+    public string DbPortKey { get; set; } = "DB_PORT";
+    public string DbNameKey { get; set; } = "DB_NAME";
+    public string DbUserKey { get; set; } = "DB_USER";
+    public string DbPasswordKey { get; set; } = "DB_PASSWORD";
+    public string DbRootUserKey { get; set; } = "DB_ROOT_USER";
+    public string DbRootPasswordKey { get; set; } = "DB_ROOT_PASSWORD";
 }
 
 public class PostgresSettings : DbSettings
 {
-    private readonly IDotEnv _dotEnv;
-    private readonly IEnvHelper _envHelper;
+    private readonly IDotEnvLoader _dotEnvLoader;
+    private readonly IEnvAccessor _envAccessor;
     private readonly PostgresEnvKeys _envKeys;
 
-    private string _dbHost = string.Empty;
-    private string _dbPort = string.Empty;
-    private string _dbRootUser = string.Empty;
-    private string _dbRootPassword = string.Empty;
+    private string
+        _dbHost = string.Empty,
+        _dbPort = string.Empty,
+        _dbRootUser = string.Empty,
+        _dbRootPassword = string.Empty,
+        _dbName = string.Empty,
+        _dbUser = string.Empty,
+        _dbPassword = string.Empty;
 
-    // Fields for DbSetup (see Getter methods below)
-    private string _dbName = string.Empty;
-    private string _dbUser = string.Empty;
-    private string _dbPassword = string.Empty;
 
-    public PostgresSettings() : this(new PostgresEnvKeys(), new DotEnv(), new EnvHelper()) { }
+    public PostgresSettings() : this(new PostgresEnvKeys(), new DotEnvLoader(), new EnvAccessor()) { }
 
-    public PostgresSettings(PostgresEnvKeys envKeys) : this(envKeys, new DotEnv(), new EnvHelper()) { }
+    public PostgresSettings(PostgresEnvKeys envKeys) : this(envKeys, new DotEnvLoader(), new EnvAccessor()) { }
 
-    public PostgresSettings(PostgresEnvKeys envKeys, IDotEnv dotEnv, IEnvHelper envHelper) : base()
+    public PostgresSettings(PostgresEnvKeys envKeys, IDotEnvLoader dotEnvLoader, IEnvAccessor envAccessor)
     {
-        _envKeys = envKeys;
-        _dotEnv = dotEnv;
-        _envHelper = envHelper;
+        _envKeys = envKeys ?? new PostgresEnvKeys();
+        _dotEnvLoader = dotEnvLoader;
+        _envAccessor = envAccessor;
     }
 
     public override void Load()
     {
-        _dotEnv.Load();
+        _dotEnvLoader.EnsureLoaded();
 
-        var defaultEnvKeys = new PostgresEnvKeys
-        {
-            DbHost = "DB_HOST",
-            DbPort = "DB_PORT",
-            DbName = "DB_NAME",
-            DbUser = "DB_USER",
-            DbPassword = "DB_PASSWORD",
-            DbRootUser = "DB_ROOT_USER",
-            DbRootPassword = "DB_ROOT_PASSWORD"
-        };
-
-        var mergedEnvKeys = new PostgresEnvKeys
-        {
-            DbHost = _envKeys.DbHost ?? defaultEnvKeys.DbHost,
-            DbPort = _envKeys.DbPort ?? defaultEnvKeys.DbPort,
-            DbName = _envKeys.DbName ?? defaultEnvKeys.DbName,
-            DbUser = _envKeys.DbUser ?? defaultEnvKeys.DbUser,
-            DbPassword = _envKeys.DbPassword ?? defaultEnvKeys.DbPassword,
-            DbRootUser = _envKeys.DbRootUser ?? defaultEnvKeys.DbRootUser,
-            DbRootPassword = _envKeys.DbRootPassword ?? defaultEnvKeys.DbRootPassword
-        };
-
-        _dbHost = _envHelper.GetRequiredString(mergedEnvKeys.DbHost);
-        _dbPort = _envHelper.GetRequiredString(mergedEnvKeys.DbPort);
-        _dbName = _envHelper.GetRequiredString(mergedEnvKeys.DbName);
-        _dbUser = _envHelper.GetRequiredString(mergedEnvKeys.DbUser);
-        _dbPassword = _envHelper.GetRequiredString(mergedEnvKeys.DbPassword);
-        _dbRootUser = _envHelper.GetRequiredString(mergedEnvKeys.DbRootUser);
-        _dbRootPassword = _envHelper.GetRequiredString(mergedEnvKeys.DbRootPassword);
+        _dbHost = _envAccessor.GetRequiredString(_envKeys.DbHostKey);
+        _dbPort = _envAccessor.GetRequiredString(_envKeys.DbPortKey);
+        _dbName = _envAccessor.GetRequiredString(_envKeys.DbNameKey);
+        _dbUser = _envAccessor.GetRequiredString(_envKeys.DbUserKey);
+        _dbPassword = _envAccessor.GetRequiredString(_envKeys.DbPasswordKey);
+        _dbRootUser = _envAccessor.GetRequiredString(_envKeys.DbRootUserKey);
+        _dbRootPassword = _envAccessor.GetRequiredString(_envKeys.DbRootPasswordKey);
     }
 
-    public override string GetDbSetupConnectionString()
+    protected override string GetDbSetupConnectionStringImpl()
     {
         return GetConnectionString("postgres", _dbRootUser, _dbRootPassword);
     }
 
-    public override string GetMigrationsConnectionString()
+    protected override string GetMigrationsConnectionStringImpl()
     {
         return GetConnectionString(_dbName, _dbRootUser, _dbRootPassword);
     }
@@ -98,12 +76,12 @@ public class PostgresSettings : DbSettings
         return _dbPassword;
     }
 
+    // Error detail option will be used unless environment variable POSTGRES_INCLUDE_ERROR_DETAIL is explicitly set to false
     private string GetConnectionString(string dbName, string dbUser, string dbPassword)
     {
         var connectionString = $"Host={_dbHost};Port={_dbPort};Database={dbName};User Id={dbUser};Password={dbPassword};";
 
-        // Error detail will be included unless environment variable POSTGRES_INCLUDE_ERROR_DETAIL is explicitly set to false
-        if (_envHelper.GetString("POSTGRES_INCLUDE_ERROR_DETAIL")?.ToLower() != "false")
+        if (_envAccessor.GetString("POSTGRES_INCLUDE_ERROR_DETAIL")?.ToLower() != "false")
         {
             connectionString += "Include Error Detail=true;";
         }

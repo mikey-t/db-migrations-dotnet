@@ -1,12 +1,12 @@
 namespace MikeyT.DbMigrations;
 
-public interface IEnvHelper
+public interface IEnvAccessor
 {
     public string GetString(string key);
     public string GetRequiredString(string key);
 }
 
-public class EnvHelper : IEnvHelper
+public class EnvAccessor : IEnvAccessor
 {
     public string GetRequiredString(string key)
     {

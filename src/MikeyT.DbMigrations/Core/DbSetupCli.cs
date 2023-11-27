@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 
 namespace MikeyT.DbMigrations;
 
@@ -159,9 +158,6 @@ Examples:
                 throw new Exception($@"Unable to dynamically invoke IDbSetupContext method ""GetDbSetup""");
             }
 
-            _logger.WriteLine("Loading settings for DbSetup type");
-            dbSetup.LoadSettings();
-
             if (command == Commands.Setup)
             {
                 await dbSetup.Setup();
@@ -173,7 +169,7 @@ Examples:
         }
     }
 
-    private bool IsHelpCommand(string[] args)
+    private static bool IsHelpCommand(string[] args)
     {
         if (args.Length < 1)
         {

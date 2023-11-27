@@ -1,6 +1,6 @@
 # Getting Started
 
-This document has getting started instructions. For more in-depth documentation, see [DbMigrationsDotnetDocumentation.md](./DbMigrationsDotnetDocumentation.md).
+This document has getting started instructions. For more in-depth documentation, see [DbMigrationsDotnet](./DbMigrationsDotnet.md).
 
 ## Pre-requisites
 
@@ -8,11 +8,7 @@ This project is completely cross-platform due to `dotnet` SDK/CLI and EntityFram
 
 - NodeJS >= 18
 - Docker
-- .NET SDK 6
-- Microsoft's EntityFramework global CLI tool `dotnet-ef`
-  ```
-  dotnet tool install --global dotnet-ef || dotnet tool update --global dotnet-ef
-  ```
+- .NET SDK version 8 (6 and 7 also supported with additional config value)
 
 ## Getting Started Overview
 
@@ -101,58 +97,6 @@ Example steps to setup a project with NodeJS support and a Typescript swigfile:
 
 Be sure to review the [swig-cli](https://github.com/mikey-t/swig) documentation for more info.
 
-## Add DbContext Config to Swigfile
-
-Import config from swig-cli-modules EntityFramework module and re-export swig tasks by adding the following to `swigfile.ts`:
-
-```typescript
-import efConfig from 'swig-cli-modules/ConfigEntityFramework'
-
-const dbMigrationsProjectPath = 'src/DbMigrations'
-
-efConfig.init(
-  dbMigrationsProjectPath,
-  [
-    {
-      name: 'MainDbContext',
-      cliKey: 'main',
-      dbSetupType: 'PostgresSetup',
-      useWhenNoContextSpecified: true
-    }
-  ]
-)
-
-export * from 'swig-cli-modules/EntityFramework'
-
-```
-
-Now when you run `swig`, you should see a new list of available commands, for example:
-
-```
-[ Command: list ][ Swigfile: swigfile.ts ][ Version: 0.0.15 ]
-Available tasks:
-  dbAddMigration
-  dbBootstrapDbContext
-  dbBootstrapMigrationsProject
-  dbListMigrations
-  dbMigrate
-  dbRemoveMigration
-  dbSetup
-  dbShowConfig
-  dbTeardown
-[ Result: success ][ Total duration: 126 ms ]
-```
-
-## Bootstrap Your new DbMigrations Project
-
-Bootstrap your new DbMigrations project by running:
-
-```
-swig dbBootstrapMigrationsProject
-```
-
-Assuming you used the example swigfile content from above, this bootstrap command will create a new C# console project at `./src/DbMigrations/` with our new `MainDbContext`.
-
 ## Setup and Start Docker
 
 > ℹ️ If you already have something listening on port 5432, you can change the `.env` value for the key `DB_PORT` in the instructions below. If you choose a port that is already in use, you'll get an error like this when you run `swig dockerUp`: "Error response from daemon: driver failed programming external connectivity on endpoint". Simply change the `DB_PORT` in your `.env` (both root and `./src/DbMigrations/.env`) and re-run `swig dockerUp`.
@@ -178,11 +122,11 @@ Now we need a database to operate on. We are going to use PostgreSQL running in 
     postgresql_data:
 
   ```
-- Update your swigfile with this line to re-export swig tasks from the swig-cli-modules DockerCompose module (you can add it right before or after the line that re-exports the EntityFramework tasks):
+- Update your swigfile with this line to re-export swig tasks from swig module `DockerCompose`:
   ```
   export * from 'swig-cli-modules/DockerCompose'
   ```
-  Now when you run `swig`, you should see 3 new tasks (in addition to the others we already added):
+  Now when you run `swig`, you should see 3 new tasks:
   ```
   dockerDown
   dockerUp
@@ -198,14 +142,74 @@ Now we need a database to operate on. We are going to use PostgreSQL running in 
   DB_ROOT_USER=postgres
   DB_ROOT_PASSWORD=Abc1234!
   ```
-- Copy this `.env` file to the DbMigrations project at `./src/DbMigrations/.env`.
 - Run `swig dockerUp`
 
-You should now have a PostgreSQL database running in a docker container! You can verify using a tool like [pgAdmin](https://www.pgadmin.org/download/) or the VSCode extension [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ckolkman.vscode-postgres). Be sure to use the values from your `.env` to connect.
+You should now have a PostgreSQL database running in a docker container! You can verify using a tool like [pgAdmin](https://www.pgadmin.org/download/) or the VSCode extension [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ckolkman.vscode-postgres). Be sure to use the values from your `.env` to connect (`DB_ROOT_USER` and `DB_ROOT_PASSWORD`). Note that the application specific user hasn't been setup yet - we'll execute a command to set that up after we define our config below.
+
+## Add DbContext Config to Swigfile
+
+Import config from the swig module `EntityFramework` and re-export swig tasks by adding the below config to your `swigfile.ts`. This will point all the swig tasks to the location where your new project will be generated and will define metadata about your DbContext classes (change `dotnetSdkVersion` if you're using 6 or 7):
+
+```typescript
+import efConfig from 'swig-cli-modules/ConfigEntityFramework'
+
+const dbMigrationsProjectPath = 'src/DbMigrations'
+
+efConfig.init(
+  dbMigrationsProjectPath,
+  [
+    {
+      name: 'MainDbContext',
+      cliKey: 'main',
+      dbSetupType: 'PostgresSetup',
+      useWhenNoContextSpecified: true
+    }
+  ],
+  { dotnetSdkVersion: 8 }
+)
+
+export * from 'swig-cli-modules/EntityFramework'
+export * from 'swig-cli-modules/DockerCompose'
+
+```
+
+Now when you run `swig`, you should see a new list of available commands, for example:
+
+```
+[ Command: list ][ Swigfile: swigfile.ts ][ Version: 0.0.16 ]
+Available tasks:
+  dbAddMigration
+  dbBootstrapDbContext
+  dbBootstrapMigrationsProject
+  dbListMigrations
+  dbMigrate
+  dbRemoveMigration
+  dbSetup
+  dbShowConfig
+  dbTeardown
+  dockerDown
+  dockerUp
+  dockerUpAttached
+[ Result: success ][ Total duration: 126 ms ]
+```
+
+## Bootstrap Your new DbMigrations Project
+
+Bootstrap your new DbMigrations project by running:
+
+```
+swig dbBootstrapMigrationsProject
+```
+
+Copy the project root `.env` file you created earlier to the DbMigrations project at `./src/DbMigrations/.env`.
+
+> ℹ️ It's recommended to automate syncing of env files when you run database/docker/migrations related commands on a dev machine. Swig is a good tool for this type of dev automation. For a simple example, see the `syncEnvFiles` method in one of the example project's `swigfile.ts`: [../example-solutions/example-postgres/swigfile.ts](../example-solutions/example-postgres/swigfile.ts).
+
+Assuming you used the example swigfile content from above, this bootstrap command will create a new C# console project at `./src/DbMigrations/` with our new `MainDbContext`.
 
 ## Run DB Migration Commands with Swig Tasks
 
-Now that we have a database migrations project, we are going to:
+Now that we have a database migrations project and a running database, we are going to:
 
 - Setup the database (create a role and schema)
 - Create an initial empty migration called "Initial"
@@ -216,7 +220,7 @@ First run:
 swig dbSetup
 ```
 
-The output should finish with something like:
+After the application database schema and user have been setup, the output should finish with something like:
 
 ```
 ✅ setup complete
@@ -253,7 +257,7 @@ swig dbMigrate
 
 You did it, good job!
 
-As mentioned above, the helper methods provided via swig tasks will also add context and project path params for you. This is part of what allows working with multiple contexts simultaneously.
+As mentioned above, the helper methods provided via swig tasks will also add context and project path params for you. This is part of what allows working with multiple contexts/databases simultaneously.
 
 By defining a small amount of config in our swigfile, we have:
 
