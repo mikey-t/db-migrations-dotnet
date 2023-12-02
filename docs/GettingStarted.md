@@ -17,9 +17,9 @@ This project is completely cross-platform due to `dotnet` SDK/CLI and EntityFram
 Follow these high level steps using the detailed instructions in subsequent sections:
 
 - Setup your project to be able to use the `swig-cli` npm package
-- Add `DbContext` metadata to a config init method in your `swigfile`
-- Run a swig command to generate a new C# project with the necessary dependencies and boilerplate
 - Setup docker and start container(s)
+- Add `DbContext` metadata to a config `init` method in your new swigfile
+- Run a swig command to generate a new C# project with the necessary dependencies and boilerplate
 - Run swig commands for database migration operations, as needed: `dbAddMigration`, `dbRemoveMigration`, `dbMigrate`, `dbListMigrations`
 
 ## Swig Setup
@@ -234,7 +234,7 @@ swig dbAddMigration Initial
 
 This will essentially run the dotnet-ef command `dotnet ef migrations add Initial` (it also adds the context name and project path params for you).
 
-Now if we run `dbListMigrations`, we can see output like the following that will tell us there is a pending migration:
+Now if we run `swig dbListMigrations`, we can see output like the following that will tell us there is a pending migration:
 
 ```
 20231126221937_Initial (Pending)
