@@ -195,15 +195,12 @@ Available tasks:
 
 ## Bootstrap Your new DbMigrations Project
 
-Bootstrap your new DbMigrations project by running:
-
-```
-swig dbBootstrapMigrationsProject
-```
-
-Copy the project root `.env` file you created earlier to the DbMigrations project at `./src/DbMigrations/.env`.
-
-> ℹ️ It's recommended to automate syncing of env files when you run database/docker/migrations related commands on a dev machine. Swig is a good tool for this type of dev automation. For a simple example, see the `syncEnvFiles` method in one of the example project's `swigfile.ts`: [../example-solutions/example-postgres/swigfile.ts](../example-solutions/example-postgres/swigfile.ts).
+- Bootstrap your new DbMigrations project by running:
+  ```
+  swig dbBootstrapMigrationsProject
+  ```
+- Copy the project root `.env` file you created earlier to the DbMigrations project at `./src/DbMigrations/.env`
+  > ℹ️ It's recommended to automate syncing of env files when you run database/docker/migrations related commands on a dev machine. Swig is a good tool for this type of dev automation. For a simple example, see the `syncEnvFiles` method in one of the example project's `swigfile.ts`: [../example-solutions/example-postgres/swigfile.ts](../example-solutions/example-postgres/swigfile.ts).
 
 Assuming you used the example swigfile content from above, this bootstrap command will create a new C# console project at `./src/DbMigrations/` with our new `MainDbContext`.
 
@@ -214,17 +211,15 @@ Now that we have a database migrations project and a running database, we are go
 - Setup the database (create a role and schema)
 - Create an initial empty migration called "Initial"
 
+Make sure you copied the `.env` file into the new DbMigrations project directory before continuing.
+
 First run:
 
 ```
 swig dbSetup
 ```
 
-After the application database schema and user have been setup, the output should finish with something like:
-
-```
-✅ setup complete
-```
+After the application database schema and user have been setup, the output should finish with something like "✅ setup complete".
 
 Create an initial empty migration called "Initial":
 

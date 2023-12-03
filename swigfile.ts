@@ -1,5 +1,5 @@
 import { Emoji, SpawnResult, emptyDirectory, getRequiredEnvVar, log, requireValidPath, spawnAsync, spawnAsyncLongRunning, which } from '@mikeyt23/node-cli-utils'
-import { dotnetBuild, installOrUpdateReportGeneratorTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
+import { dotnetBuild, ensureReportGeneratorTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
 import 'dotenv/config'
 import fs from 'node:fs'
 import fsp, { readdir } from 'node:fs/promises'
@@ -94,7 +94,7 @@ export async function exampleParseNames() {
 }
 
 export async function installTestReportGenerator() {
-  await installOrUpdateReportGeneratorTool()
+  await ensureReportGeneratorTool()
 }
 
 export async function cleanProject() {
