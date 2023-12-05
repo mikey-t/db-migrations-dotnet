@@ -1,12 +1,9 @@
 # db-migrations-dotnet
 
-This Nuget package contains:
+The MikeyT.DbMigrations Nuget package contains:
 
-- `DbSetupCli` class that exposes commands `setup`, `teardown`, `list`, and `bootstrap` (see project readme for more info: https://github.com/mikey-t/db-migrations-dotnet)
+- `DbSetupCli` class that exposes commands `setup`, `teardown`, `list`, and `bootstrap`
 - `MigrationScriptRunner` class to be used for running pure SQL migrations with simple placeholder replacement
+- Base classes to allow for creating custom implementations: `DbSetup`, `DbSettings`, `IDbSetupContext`
 
-## See Also
-
-- [swig-cli-modules](https://github.com/mikey-t/swig-cli-modules) - EntityFramework module
-- [dotnet-react-sandbox](https://github.com/mikey-t/dotnet-react-sandbox) - full example implementation
-- [node-cli-utils](https://github.com/mikey-t/node-cli-utils) - EF wrapper commands within sub-module `dbMigrationUtils`
+See the db-migrations-dotnet project readme for usage information: https://github.com/mikey-t/db-migrations-dotnet
