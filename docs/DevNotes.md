@@ -50,3 +50,32 @@ Add to csproj instead:
 ```
 dotnet build
 ```
+
+## EF Bundle Testing
+
+Create bundle in example-postgres project:
+
+```
+cd example-solutions/example-postgres
+swig dbCreateRelease
+```
+
+Copy file to server:
+
+```
+scp -i <path_to_key_file> ./release/MigrateMainDbContext-linux-x64.exe <user@location>:/home/<user>/eftest
+```
+
+On server:
+
+```
+cd ~/eftest
+chmod u+x MigrateMainDbContext-linux-x64.exe
+```
+
+Create `.env` with correct values in the same directory, then execute it:
+
+```
+./MigrateMainDbContext-linux-x64.exe
+```
+

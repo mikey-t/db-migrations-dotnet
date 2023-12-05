@@ -64,14 +64,21 @@ public class DotEnvLoader : IDotEnvLoader
 
     public void Load()
     {
-        Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
+        // Don't log a warning if the default current directory .env doesn't exist so bundle deployments don't get unnecessary warnings.
+        // The error message that a particular env value is missing should be enough for development scenarios.
+        Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"), false);
     }
 
     public void Load(string filePath)
     {
+        Load(filePath, true);
+    }
+
+    public void Load(string filePath, bool logMissingFileWarning)
+    {
         if (!File.Exists(filePath))
         {
-            if (_logEnabled)
+            if (_logEnabled && logMissingFileWarning)
             {
                 _logger.Warn($@"No env file found at ""{filePath}""");
             }

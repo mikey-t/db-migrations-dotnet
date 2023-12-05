@@ -55,6 +55,7 @@ The `swig-cli-modules` module `EntityFramework` will provide these tasks (all co
 | `dbTeardown` | Drops the user and schema for each of the DbContexts defined in your swigfile. It will prompt you to confirm for each DbContext. The database must be running and accessible. Note that this will only operate on the database - all C# and SQL files will be left untouched. |
 | `dbBootstrapDbContext <FULL_DB_CONTEXT_CLASS_NAME> <DB_SETUP_TYPE_CLASS_NAME>` | Bootstrap a new DbContext class in your DbMigrations console project. Example: `swig dbBootstrapDbContext TestDbContext PostgresSetup`. |
 | `dbBootstrapMigrationsProject` | Bootstrap a new console project and set everything up based on swigfile config. Not re-runnable -it will simply exit if the project directory already exists. If you're experimenting with a brand new project, you can delete the project, update your swigfile config and re-run it as many times as needed, but be sure your database is also reset if you've applied migrations and want to start over (delete the docker volume in between calls, for example). |
+| `dbCreateRelease [<CLI_KEY>\|all]` | Create EF bundle executables for your DbContext(s). See [Deploying Migrations](#deploying-migrations). |
 
 ## Bootstrap a new DbMigrations Project
 
@@ -204,3 +205,87 @@ This is a little confusing since PostgresSettings exposes the application specif
 ## Postgres Optional Env Var
 
 If you don't want the connection string to include error detail, you can add `POSTGRES_INCLUDE_ERROR_DETAIL=false` to your .env file (in the root and in the database migrations project).
+
+## Deploying Migrations
+
+There are multiple ways to deploy EF migrations. This project facilitates use of EF bundles by providing a wrapper command that handles generating and running the correct command for the DbContexts that are relevant.
+
+This is the swig task to generate an EF bundle that is ready for execution against a production database instance:
+
+```
+swig dbCreateRelease
+```
+
+You can pass an optional param to specify which DbContext(s) to create bundles for:
+
+- Omit the extra param to create bundles for all DbContext entries in swig config that have `useWhenNoContextSpecified` set to `true`
+- Pass `all` to create bundles for all DbContexts
+- Pass the `cliKey` (as specified in swig config) for a single DbContext to operate on
+- Pass the full class name for a single DbContext to operate on
+
+This task will generate executable(s) in a directory called `release` - the directory will be created if it doesn't exist.
+
+This task will generate and run one `dotnet ef migrations bundle` command per DbContext and "Dotnet Runtime Identifier" (target architecture).
+
+As an example, if you have a `MainDbContext` and a `TestDbContext`, but you only want to create a release for the main context, you could run this (assuming you've set your `cliKey` in swig config to "main"):
+
+```
+swig dbCreateRelease main
+```
+
+The filename for each executable will be `Migrate<DbContextName>-<RID>.exe`. For example, if you have the 2 DbContexts mentioned, and you don't specify the `releaseRuntimeIds` option to the `init` method in order to stay with the defaults (`'linux-x64'` and `'win-x64'`), the output files will be:
+
+```
+MigrateMainDbContext-linux-x64.exe
+MigrateMainDbContext-win-x64.exe
+MigrateTestDbContext-linux-x64.exe
+MigrateTestDbContext-win-x64.exe
+```
+
+Important considerations when executing the migration bundles for production:
+
+- When running these files, the architecture must match the runtime id generated for the executable. You can't run a linux exe on windows or the other way around.
+- The appropriate environment variables must exist, or there needs to be a `.env` file in the same directory with the appropriate values. These are used to build the connection string. You can optionally pass `--connection` to the bundle executable to override the connection in the DbContext `OnConfiguring` method: https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#efbundle
+- The database must be accessible from the location the script is run based on the environment variables or `--connection` option used.
+- The database (schema) and database user (role) must already exist in the database instance. This project provides database setup functionality for developers, but this is purposely omitted from the deployment scheme for these reasons:
+  - To avoid accidental deletion of a production database with the `teardown` command
+  - To avoid forcing opinionated setup of database and user
+  - In some cases the mechanism and steps for creating a database and user are significantly different than simply running a couple of sql statements, and automating every possible case is out of scope for this project
+
+## Csproj File Notes
+
+Using the swig `dbBootstrapMigrationsProject` command will generate a new project with a csproj file similar to this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="MikeyT.DbMigrations" Version="0.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update=".env" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations/MainDbContextMigrations" />
+  </ItemGroup>
+</Project>
+```
+
+Explanations:
+
+- The reference to `Microsoft.EntityFrameworkCore.Design` is required for `dotnet-ef` to be able to run migration commands in the project. The major version needs to be compatible with the version `MikeyT.DbMigrations` references. This is automatically detected when generating the project. If you update to a different major version of `Microsoft.EntityFrameworkCore.Design`, you may have to add some other dependencies to get it to work (such as `Microsoft.EntityFrameworkCore.Abstractions`).
+- The entry for the `.env` is necessary so `dotnet-ef` commands can get the necessary environment variables to build the connection string. This isn't needed for deployment, so it isn't an embedded resource and won't be added to the bundle executable when running `swig dbCreateRelease`. See [Deploying Migrations](#deploying-migrations) for more info on deployment.
+- The `EmbeddedResource` reference to `Scripts/**` results in all your sql files in that directory getting included in both the built dll that is run locally as well as the generated deployment bundle. These scripts are accessed in the `MigrationScriptRunner` by accessing embedded resources in the assembly.

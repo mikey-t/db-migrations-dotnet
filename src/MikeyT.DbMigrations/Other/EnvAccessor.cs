@@ -23,7 +23,7 @@ public class EnvAccessor : IEnvAccessor
         var val = Environment.GetEnvironmentVariable(key);
         if (required && string.IsNullOrWhiteSpace(val))
         {
-            throw new Exception("Missing environment variable for key " + key);
+            throw new Exception("Missing environment variable: " + key);
         }
 
         return val ?? string.Empty;

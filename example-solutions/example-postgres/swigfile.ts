@@ -10,18 +10,18 @@ import { dbBootstrapMigrationsProject, dbSetup } from 'swig-cli-modules/EntityFr
 const exampleApiPath = 'src/ExampleApiWrapper'
 const dbMigrationsProjectPath = 'src/DbMigrations'
 
-// Simple example with one DbContext
+// Simple example with one DbContext. See README.md before switching example config.
 efConfig.init(dbMigrationsProjectPath, [
   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true }
 ])
 
-// Example with 2 DbContexts (2 databases)
+// Example with 2 DbContexts (2 databases). See README.md before switching example config.
 // efConfig.init(dbMigrationsProjectPath, [
 //   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true },
 //   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true }
 // ])
 
-// Example with 2 DbContexts (2 databases) that use different sql scripts in segregated subdirectories
+// Example with 2 DbContexts (2 databases) that use different sql scripts in segregated subdirectories. See README.md before switching example config
 // efConfig.init(dbMigrationsProjectPath, [
 //   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Main' },
 //   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'PostgresSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Test' }
@@ -60,15 +60,6 @@ export async function deleteMigrationsProject() {
 
 // You can just run "dbBootstrapMigrationsProject", but this is an example of how to automate the next steps (env files, dockerUp, dbSetup).
 // Also converts the nuget reference to a project reference for easy testing of changes to the DbSetupCli C# lib.
-//
-// If trying out multiple DbContexts, don't forget to modify each with different database names by changing what env vars are evaluated, for example:
-// public class TestDbContext : PostgresMigrationsDbContext
-// {
-//     public override PostgresSetup GetDbSetup()
-//     {
-//         return new PostgresSetup(new PostgresEnvKeys { DbNameKey = "DB_NAME_TEST" });
-//     }
-// }
 export const bootstrapMigrationsProject = series(
   dbBootstrapMigrationsProject,
   convertNugetReferenceToProjectReference,
