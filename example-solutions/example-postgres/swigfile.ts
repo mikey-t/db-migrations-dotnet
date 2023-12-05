@@ -32,12 +32,8 @@ export * from 'swig-cli-modules/EntityFramework'
 
 export async function syncEnvFiles() {
   await copyNewEnvValues('.env.template', '.env')
-  if (fs.existsSync(exampleApiPath)) {
-    await overwriteEnvFile('.env', path.join(exampleApiPath, '.env'))
-  }
-  if (fs.existsSync(dbMigrationsProjectPath)) {
-    await overwriteEnvFile('.env', path.join(dbMigrationsProjectPath, '.env'))
-  }
+  await overwriteEnvFile('.env', path.join(exampleApiPath, '.env'))
+  await overwriteEnvFile('.env', path.join(dbMigrationsProjectPath, '.env'))
 }
 
 // Run the ExampleApi project
