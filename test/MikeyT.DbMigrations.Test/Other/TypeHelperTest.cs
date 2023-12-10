@@ -23,7 +23,9 @@ public class TypeHelperTest
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
+#pragma warning disable xUnit1012 // Null should only be used for nullable parameters
     [InlineData(null)]
+#pragma warning restore xUnit1012 // Null should only be used for nullable parameters
     public void DoesClassExist_MissingClassName_Throws(string className)
     {
         var dbMigrationsLibAssembly = Assembly.Load(GlobalConstants.AssemblyName);
