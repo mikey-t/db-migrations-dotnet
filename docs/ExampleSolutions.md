@@ -28,6 +28,27 @@ For each example project, these are the general initial setup steps:
 - Start the example .NET WebApi project: `swig run`
 - Browse to the running service's swagger API (the root URL is configured to serve this)
 
+## Switching Between Swig EF Config Examples
+
+You can comment and uncomment the different `efConfig.init` in `swigfile.ts` to try out different options. When doing this, you'll need to keep a few things in mind:
+
+- Switching to or from the example where the DbContexts each use a different subdirectory will require you to:
+  - Update each migration C# file under `Migrations/MainDbContextMigrations` so that the relative path now points to the correct location
+  - If moving to config with subdirectories, create a `src/DbMigrations/Scripts/Main` and move scripts into it, or if going back to non-subdirectories, move scripts out of that `Main` directory back into the `Scripts` directory `Main` directory
+- If switching to the multiple DbContext example:
+  - Bootstrap the new C# DbContext class by running: `swig dbBootstrapDbContext TestDbContext PostgresSetup`
+  - Update `src/DbMigrations/TestDbContext.cs` so it uses a different database name:
+    ```
+    public class TestDbContext : PostgresMigrationsDbContext
+    {
+        public override PostgresSetup GetDbSetup()
+        {
+            return new PostgresSetup(new PostgresEnvKeys { DbNameKey = "DB_NAME_TEST" });
+        }
+    }
+    ```
+  - Bring the new TestDbContext in sync with the MainDbContext by running `swig dbAddMigration test Initial` and `swig dbAddMigration test AddPerson` and then adding the example sql from the sql files in the root to the newly generated script files in the DbMigrations project
+
 ## Other Things To Try
 
 ### Try listing swig tasks
@@ -117,7 +138,12 @@ Pre-requisite C# class implementations for the database engine type (these can b
 
 For example implementations of these classes, see the PostgreSQL versions under the directory [../src/MikeyT.DbMigrations/Implementations/Postgres/](../src/MikeyT.DbMigrations/Implementations/Postgres/).
 
-Setup steps:
+ExampleApi changes:
+- Add entry to `DbType` enum
+- Add connection string logic in ConnectionStringProvider
+- Add implementation of `IPersonRepository` and wire up in `ExampleApiService`
+
+New example solution setup steps:
 
 - Create a new directory under `example-solutions`
 - Create a src dir for an API project and the DbMigrations project: `mkdir src`
@@ -129,11 +155,11 @@ Setup steps:
 - Create an empty dotnet web project: `dotnet new web -o ./src/ExampleApiWrapper`
 - Add the API wrapper project to the solution: `dotnet sln add ./src/ExampleApiWrapper`
 - Navigate to the API wrapper project and add a reference back to the main example API: `dotnet add reference ..\..\..\..\src\ExampleApi`
-- Replace the API project's `Program.cs`:
+- Replace the API project's `Program.cs` (replace the `DbType` param with your database type):
   ```csharp
   using ExampleApi;
 
-  ExampleApiService.Run(args);
+  ExampleApiService.Run(args, DbType.Postgres);
   ```
 - Bootstrap the DbMigrations project: `swig bootstrapMigrationsProject`
 - Setup the DB: `swig dbSetup`

@@ -5,16 +5,9 @@ using Npgsql;
 
 namespace ExampleApi.Data;
 
-public interface IPersonRepository
+public class PersonRepositoryPostgres : BaseRepository, IPersonRepository
 {
-    Task<int> AddPerson(Person person);
-    Task<List<Person>> GetAll();
-    Task DeleteAll();
-}
-
-public class PersonRepository : BaseRepository, IPersonRepository
-{
-    public PersonRepository(IConnectionStringProvider connectionStringProvider, IEnvironmentSettings environmentSettings)
+    public PersonRepositoryPostgres(IConnectionStringProvider connectionStringProvider, IEnvironmentSettings environmentSettings)
         : base(connectionStringProvider, environmentSettings)
     {
     }

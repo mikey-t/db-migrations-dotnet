@@ -19,9 +19,9 @@
     <EmbeddedResource Include="Scripts/**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations/MainDbContextMigrations" />
+    <ProjectReference Include="..\..\..\..\src\MikeyT.DbMigrations\MikeyT.DbMigrations.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\MikeyT.DbMigrations\MikeyT.DbMigrations.csproj" />
+    <Folder Include="Migrations/MainDbContextMigrations" />
   </ItemGroup>
 </Project>

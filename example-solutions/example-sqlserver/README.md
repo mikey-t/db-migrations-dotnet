@@ -1,3 +1,3 @@
-# MikeyT.DbMigrations example solution - PostgreSQL
+# MikeyT.DbMigrations example solution - SqlServer
 
 See [ExampleSolutions.md](../../docs/ExampleSolutions.md).

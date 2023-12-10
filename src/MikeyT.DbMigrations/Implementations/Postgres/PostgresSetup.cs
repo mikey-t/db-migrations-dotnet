@@ -85,7 +85,7 @@ public class PlaceholderDbContext : PostgresMigrationsDbContext { }
         return boilerplate.Replace("PlaceholderDbContext", dbContextName);
     }
 
-    private static async Task ThrowIfUnsafeRoleOrDbName(NpgsqlConnection connection, string roleName, string dbName)
+    private async Task ThrowIfUnsafeRoleOrDbName(NpgsqlConnection connection, string roleName, string dbName)
     {
         var safeRoleName = await connection.QueryFirstOrDefaultAsync<string>("SELECT quote_ident(@RoleName);", new { RoleName = roleName });
         if (safeRoleName != roleName)
@@ -115,23 +115,23 @@ public class PlaceholderDbContext : PostgresMigrationsDbContext { }
         await connection.ExecuteAsync($"DROP DATABASE IF EXISTS {dbName}");
     }
 
-    private static async Task<bool> RoleExists(NpgsqlConnection connection, string roleName)
+    private async Task<bool> RoleExists(NpgsqlConnection connection, string roleName)
     {
         return await connection.QuerySingleAsync<bool>($"select exists(SELECT FROM pg_catalog.pg_roles WHERE rolname = '{roleName}');");
     }
 
-    private static async Task<bool> DbExists(NpgsqlConnection connection, string dbName)
+    private async Task<bool> DbExists(NpgsqlConnection connection, string dbName)
     {
         return await connection.QuerySingleAsync<bool>($"select exists(SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{dbName}'));");
     }
 
-    private static async Task CreateRole(NpgsqlConnection connection, string user, string password)
+    private async Task CreateRole(NpgsqlConnection connection, string user, string password)
     {
         await connection.ExecuteAsync($"CREATE ROLE {user} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT NOREPLICATION CONNECTION " +
                                       $"LIMIT -1 PASSWORD '{password}';");
     }
 
-    private static async Task CreateDb(NpgsqlConnection connection, string dbName, string owningUser)
+    private async Task CreateDb(NpgsqlConnection connection, string dbName, string owningUser)
     {
         await connection.ExecuteAsync($"CREATE DATABASE {dbName} WITH OWNER = {owningUser} ENCODING = 'UTF8' CONNECTION LIMIT = -1;");
     }
@@ -155,7 +155,7 @@ public class PlaceholderDbContext : PostgresMigrationsDbContext { }
         await connection.ExecuteAsync($"DROP ROLE IF EXISTS {roleName}");
     }
 
-    private static async Task<bool> RoleHasDependentObjects(NpgsqlConnection connection, string roleName)
+    private async Task<bool> RoleHasDependentObjects(NpgsqlConnection connection, string roleName)
     {
         var query = $@"SELECT EXISTS (
                         SELECT 1 FROM pg_database

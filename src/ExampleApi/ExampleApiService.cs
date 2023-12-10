@@ -8,7 +8,7 @@ namespace ExampleApi;
 
 public static class ExampleApiService
 {
-    public static void Run(string[] args)
+    public static void Run(string[] args, DbType dbType)
     {
         DotEnv.Load();
 
@@ -28,13 +28,25 @@ public static class ExampleApiService
         SqlMapper.AddTypeHandler(new DateTimeHandler());
 
         builder.Services.AddSingleton<IEnvironmentSettings>(envSettings);
-        builder.Services.AddSingleton<IConnectionStringProvider>(new ConnectionStringProvider(envSettings));
+        builder.Services.AddSingleton<IConnectionStringProvider>(new ConnectionStringProvider(envSettings, dbType));
         builder.Services.AddSingleton<INameLogic>(new NameLogic());
-        builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+        
+        switch (dbType)
+        {
+            case DbType.Postgres:
+                builder.Services.AddScoped<IPersonRepository, PersonRepositoryPostgres>();
+                break;
+            case DbType.SqlServer:
+                builder.Services.AddScoped<IPersonRepository, PersonRepositorySqlServer>();
+                break;
+            default:
+                throw new Exception("DbType not implemented: " + Enum.GetName(dbType));
+        }
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(c => {
+        builder.Services.AddSwaggerGen(c =>
+        {
             c.EnableAnnotations();
         });
 

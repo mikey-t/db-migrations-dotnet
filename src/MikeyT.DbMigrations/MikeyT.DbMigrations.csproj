@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageVersion>0.6.1</PackageVersion>
+    <PackageVersion>0.7.0</PackageVersion>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -19,13 +19,15 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.21" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.0.13, 8.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[7.0.13, 8.0.0)">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.0.14, 8.0.0)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[7.0.14, 8.0.0)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[7.0.13, 8.0.0)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[7.0.14, 8.0.0)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="[7.0.11, 8.0.0)" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[7.0.14, 8.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

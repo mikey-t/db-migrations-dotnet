@@ -20,9 +20,12 @@
     "cSpell.words": [
         "Bootstrapper",
         "cobertura",
+        "datareader",
+        "datawriter",
         "datdba",
         "datname",
         "dbmigrationsexample",
+        "msdb",
         "NOCREATEDB",
         "NOCREATEROLE",
         "NOREPLICATION",
@@ -32,6 +35,7 @@
         "reporttypes",
         "rolname",
         "sqlserver",
-        "targetdir"
+        "targetdir",
+        "tempdb"
     ]
 }

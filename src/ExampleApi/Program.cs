@@ -1,3 +1,3 @@
 using ExampleApi;
 
-ExampleApiService.Run(args);
+ExampleApiService.Run(args, DbType.Postgres);
