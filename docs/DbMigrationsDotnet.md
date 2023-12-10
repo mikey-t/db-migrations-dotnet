@@ -6,7 +6,7 @@ This document contains detailed project documentation. For information on using 
 
 This project's main goals (see additional info here: [Project Goals](./ProjectGoals.md)):
 
-- Manage database migrations using EntityFramework for the migrations while only using raw SQL scripts instead of EF model classes
+- Manage database migrations using EntityFramework while only using raw SQL scripts instead of EF model classes
 - Automate the setup/teardown of a database on a dev machine
 - Allow easily managing database migrations from a central location
 - Allow managing multiple databases simultaneously, which makes it easier to manage a test-specific database that mirrors the primary application database
