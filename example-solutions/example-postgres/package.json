@@ -7,13 +7,13 @@
   "license": "MIT",
   "devDependencies": {
     "@mikeyt23/node-cli-utils": "^2.0.25",
-    "@types/node": "^18.19.2",
+    "@types/node": "^20.10.4",
     "swig-cli": "^0.0.16",
-    "swig-cli-modules": "^0.2.3",
+    "swig-cli-modules": "^0.3.2",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.3"
   },
   "volta": {
-    "node": "18.19.0"
+    "node": "20.10.0"
   }
 }

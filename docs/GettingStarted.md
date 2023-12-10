@@ -161,8 +161,7 @@ efConfig.init(
     {
       name: 'MainDbContext',
       cliKey: 'main',
-      dbSetupType: 'PostgresSetup',
-      useWhenNoContextSpecified: true
+      dbSetupType: 'PostgresSetup'
     }
   ],
   { dotnetSdkVersion: 8 }

@@ -12,19 +12,19 @@ const dbMigrationsProjectPath = 'src/DbMigrations'
 
 // Simple example with one DbContext. See README.md before switching example config.
 efConfig.init(dbMigrationsProjectPath, [
-  { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup', useWhenNoContextSpecified: true }
+  { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup' }
 ])
 
 // Example with 2 DbContexts (2 databases). See README.md before switching example config.
 // efConfig.init(dbMigrationsProjectPath, [
-//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup', useWhenNoContextSpecified: true },
-//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'SqlServerSetup', useWhenNoContextSpecified: true }
+//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup' },
+//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'SqlServerSetup' }
 // ])
 
 // Example with 2 DbContexts (2 databases) that use different sql scripts in segregated subdirectories. See README.md before switching example config
 // efConfig.init(dbMigrationsProjectPath, [
-//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Main' },
-//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'SqlServerSetup', useWhenNoContextSpecified: true, scriptsSubdirectory: 'Test' }
+//   { name: 'MainDbContext', cliKey: 'main', dbSetupType: 'SqlServerSetup', scriptsSubdirectory: 'Main' },
+//   { name: 'TestDbContext', cliKey: 'test', dbSetupType: 'SqlServerSetup', scriptsSubdirectory: 'Test' }
 // ])
 
 export * from 'swig-cli-modules/DockerCompose'

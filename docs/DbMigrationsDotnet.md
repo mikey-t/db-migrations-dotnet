@@ -42,7 +42,7 @@ The `swig-cli-modules` module `DockerCompose` will provide these tasks (Docker a
 
 The `swig-cli-modules` module `EntityFramework` will provide these tasks (all commands except `dbBootstrapMigrationsProject` require a valid DbMigration C# console app to exist at the location specified in swigfile config):
 
-> Below, the `CLI_KEY` is the `cliKey` key associated with a DbContext that you setup in your swigfile (see [Getting Started](./GettingStarted.md) for example config). You can also pass `all` instead of a CLI key to operate on all DbContexts. Or you can omit that parameter and any DbContext with swigfile config of `useWhenNoContextSpecified: true` will be operated on.
+> Below, the `CLI_KEY` is the `cliKey` key associated with a DbContext that you setup in your swigfile (see [Getting Started](./GettingStarted.md) for example config). You can also pass `all` instead of a CLI key to operate on all DbContexts. Or you can omit that parameter and any DbContext will be operated on that has swigfile config that either lacks the `useWhenNoContextSpecified` option or has it to `true`.
 
 | swig task | description |
 | ------------ | ----------- |
@@ -105,19 +105,22 @@ This project is geared towards using dotnet and EntityFramework for migrations, 
 If you'd like to use a different dotnet version for the generated console app, you can pass additional config to the `init` method in your swigfile, for example, to use dotnet `6` instead of the default `8`:
 
 ```typescript
+import efConfig from 'swig-cli-modules/ConfigEntityFramework'
+
 efConfig.init(dbMigrationsProjectPath,
   [
     {
       name: 'MainDbContext',
       cliKey: 'main',
-      dbSetupType: 'PostgresSetup',
-      useWhenNoContextSpecified: true
+      dbSetupType: 'PostgresSetup'
     }
   ],
   {
     dotnetSdkVersion: 6
   }
 )
+
+export * from 'swig-cli-modules/EntityFramework'
 ```
 
 ## DbSettings GetLogSafeConnectionString

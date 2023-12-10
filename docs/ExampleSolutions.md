@@ -95,23 +95,25 @@ Note that the project's `.env.template` already has an entry for `DB_NAME_TEST`,
 Then add the context info to your swigfile init call so it looks something like this:
 
 ```typescript
+import efConfig from 'swig-cli-modules/ConfigEntityFramework'
+
 efConfig.init(
   dbMigrationsPath,
   [
     {
       name: 'MainDbContext',
       cliKey: 'main',
-      dbSetupType: 'PostgresSetup',
-      useWhenNoContextSpecified: true
+      dbSetupType: 'PostgresSetup'
     },
     {
       name: 'TestDbContext',
       cliKey: 'test',
-      dbSetupType: 'PostgresSetup',
-      useWhenNoContextSpecified: true
+      dbSetupType: 'PostgresSetup'
     }
   ]
 )
+
+export * from 'swig-cli-modules/EntityFramework'
 ```
 
 Then add the same migrations to the new TestDbContext that the MainDbContext has by running each of these commands:
