@@ -37,5 +37,6 @@
         "sqlserver",
         "targetdir",
         "tempdb"
-    ]
+    ],
+    "dotnet.defaultSolution": "db-migrations-dotnet.sln"
 }
