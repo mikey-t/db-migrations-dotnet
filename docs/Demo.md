@@ -2,7 +2,7 @@
 
 ## Project setup
 
-The following video demonstrates setting up a brand new project that will be utilizing a single PostgreSQL database:
+The following clip demonstrates setting up a brand new project that will be utilizing a single PostgreSQL database:
 
 - Create new directory for project
 - Initialize [swig-cli](https://github.com/mikey-t/swig) dev task orchestration tool for project
@@ -26,7 +26,15 @@ See [./GettingStarted.md](./GettingStarted.md) for detailed instructions.
 
 ## Add Initial Migration
 
-TODO
+The following clip demonstrates creating an initial empty migration that we can later use to easily migrate our database back to it's initial state if we need to by using the migration name "Initial":
+
+- Run: `swig dbAddMigration Initial`
+- Show migration in it's "pending" state by running the "list" command: `swig dbListMigrations`
+- Show boilerplate EF C# files and empty "up" and "down" sql script placeholder files
+- Apply migrations: `swig dbMigrate`
+- Show that migration is applied by running `swig dbListMigrations` again (no "pending" status)
+
+![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_InitialMigration01.gif)
 
 ## Add Example Migration
 
