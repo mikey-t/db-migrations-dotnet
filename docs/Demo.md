@@ -20,6 +20,8 @@ The following clip demonstrates setting up a brand new project that will be util
 - Run the swig task `dbSetup` which will create users and databases defined in our `swigfile.ts`
 - Use vscode PostgreSQL extension to verify that database was created
 
+*Length: 60 seconds*
+
 ![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_ProjectSetup01.gif)
 
 See [./GettingStarted.md](./GettingStarted.md) for detailed instructions.
@@ -34,7 +36,9 @@ The following clip demonstrates creating an initial empty migration that we can 
 - Apply migrations: `swig dbMigrate`
 - Show that migration is applied by running `swig dbListMigrations` again (no "pending" status)
 
-![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_InitialMigration01.gif)
+*Length: 42 seconds*
+
+![db-migrations-dotnet initial migration demo](./images/DbMigrationsDotnetDemo_InitialMigration01.gif)
 
 ## Add Example Migration
 
@@ -46,7 +50,9 @@ The following clip demonstrates creating a migration for a table called "Person"
 - Apply migrations with command: `swig dbMigrate`
 - Show that new table exists in database
 
-![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_CreateMigration01.gif)
+*Length: 35 seconds*
+
+![db-migrations-dotnet create migration demo](./images/DbMigrationsDotnetDemo_CreateMigration01.gif)
 
 ## Remove Migration
 
@@ -60,12 +66,48 @@ The following clip demonstrates removing the migration from the previous example
 - Note the message stating that non-empty sql files were not deleted
 - Manually delete `Person.sql` and `Person_Down.sql` (assuming we don't need this migration anymore)
 
-![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_RemoveMigration01.gif)
+*Length: 42 seconds*
+
+![db-migrations-dotnet remove migration demo](./images/DbMigrationsDotnetDemo_RemoveMigration01.gif)
 
 ## Generate EF Deployment Bundle
 
-TODO
+The following clip demonstrates creating a deployment bundle:
+
+- Update config in `swigfile.ts` so it only generates a single `linux-x64` bundle, instead of the default of generating 2 bundles (`linux-x64` and `win-x64`)
+- Run: `swig dbCreateRelease`
+- Show the generated exe
+
+*Length: 22 seconds*
+
+![db-migrations-dotnet create deployment bundle demo](./images/DbMigrationsDotnetDemo_CreateDeploymentBundle01.gif)
 
 ## Deploy Using Generated EF Deployment Bundle
 
-TODO
+The following clip demonstrates deploying the Entity Framework bundle generated in the previous clip to a mock production database:
+
+- Setup a mock production database (note that mock database setup is for demo purposes only - normally this would be setup in your deployment environment by some other means):
+  - Create a directory `acme-prod-mock`
+  - Copy `docker-compose.yml` as-is to the new directory
+  - Copy `.env` to the new directory and change the port from `5432` to `5431` so both databases can be running at the same time
+  - Add some demo-only snippets to `swigfile.ts` to interact with the mock production database
+  - Start the new containerized database
+  - Run `docker container ls` to show that both containers are now running and available on different ports
+  - Register new database instance in vscode postgresql extension using alternate port so we can later visually see when the migrations have been applied
+  - Login to the container
+  - Run psql commands to create new empty `dbmigrationsexample` database and user role
+  - Show in vscode postgresql extension that the new instance has the `dbmigrationsexample` database
+- Copy files into the mock production container's `/tmp` directory:
+  - EF bundle: `./release/MigrateMainDbContext-linux-x64.exe`
+  - `./.env` (using the root version with port `5432` since that's the container-internal port)
+- From shell within container's `/tmp` directory, execute EF bundle: `./MigrateMainDbContext-linux-x64.exe`
+- Show in vscode postgresql extension that mock production database has had our database migrations applied
+
+*Length: 90 seconds*
+
+![db-migrations-dotnet deploy bundle demo](./images/DbMigrationsDotnetDemo_DeployBundle01.gif)
+
+> ℹ️ Alternatively, if you're on a windows machine that has access to the target database and would like to deploy directly from your own local machine instead of copying the bundle to the target server:
+> - Generate an EF bundle that targets windows instead of linux by adding `win-x64` to `releaseRuntimeIds` array in your `swigfile.ts` config
+> - Add a `.env` file to the release directory next to the generated bundle executable
+> - Execute the bundle file

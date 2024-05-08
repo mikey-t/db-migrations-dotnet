@@ -1,6 +1,6 @@
 # db-migrations-dotnet Documentation
 
-This document contains detailed project documentation. For information on using this process in your own application, take a look at [Getting Started](./GettingStarted.md).
+This document contains detailed project documentation. For instructions on getting started, take a look at [./GettingStarted.md](./GettingStarted.md).
 
 ## What is it?
 
@@ -26,13 +26,13 @@ Components outside of this project:
   - CLI wrappers for EntityFramework commands so that we don't have to remember all the different `dotnet-ef` commands and can easily manage multiple DbContext classes simultaneously
 - Npm package `@mikeyt23/node-cli-utils`, which provides a lot of miscellaneous functionality to the `swig-cli-modules` EF module functionality
 
-See the [Getting Started](./GettingStarted.md) instructions to see how it all fits together.
+Look at [./GettingStarted.md](./GettingStarted.md) to see how it all fits together.
 
 ## Swig EF Module Task Reference
 
 Once you've setup your project using the [Getting Started](./GettingStarted.md) instructions, you'll have a number of available task commands.
 
-The `swig-cli-modules` module `DockerCompose` will provide these tasks (Docker and a valid `docker-compose.yml` in the root of the project are the pre-requisites):
+The `swig-cli-modules` module `DockerCompose` will provide the following tasks (it is required to have Docker installed and to have a valid `docker-compose.yml` in the root of your project):
 
 | swig task | description |
 | ------------ | ----------- |
@@ -42,7 +42,7 @@ The `swig-cli-modules` module `DockerCompose` will provide these tasks (Docker a
 
 The `swig-cli-modules` module `EntityFramework` will provide these tasks (all commands except `dbBootstrapMigrationsProject` require a valid DbMigration C# console app to exist at the location specified in swigfile config):
 
-> Below, the `CLI_KEY` is the `cliKey` key associated with a DbContext that you setup in your swigfile (see [Getting Started](./GettingStarted.md) for example config). You can also pass `all` instead of a CLI key to operate on all DbContexts. Or you can omit that parameter and any DbContext will be operated on that has swigfile config that either lacks the `useWhenNoContextSpecified` option or has it to `true`.
+> Below, the `CLI_KEY` is the `cliKey` key associated with a DbContext that you setup in your swigfile (see [./GettingStarted.md](./GettingStarted.md) for example config). You can also pass `all` instead of a CLI key to operate on all DbContexts. Or you can omit that parameter and any DbContext will be operated on that has swigfile config that either lacks the `useWhenNoContextSpecified` option or has it to `true`.
 
 | swig task | description |
 | ------------ | ----------- |
@@ -98,7 +98,7 @@ You can manually remove a DbContext class with these steps:
 
 ## Using `db-migrations-dotnet` in Non-Dotnet Projects
 
-This project is geared towards using dotnet and EntityFramework for migrations, but there is no direct connection between the migrations project and the application that requires access to your database. This means you can use this project to manage a database for any type of project, as long as there is an EntityFramework driver for the database type and you have an implementation for the `DbSetup`, `DbSettings` and `IDbSetupContext` C# classes from this project.
+This project is geared towards using dotnet and EntityFramework for migrations, but there is no direct connection between the migrations project and the application that requires access to your database. This means you can use this project to manage a database for any type of project, as long as there is an EntityFramework provider for the database type and you have an implementation for the `DbSetup`, `DbSettings` and `IDbSetupContext` C# classes from this project.
 
 ## Specify a Different Dotnet Version for Bootstrapped Console App
 
