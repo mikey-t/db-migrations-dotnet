@@ -5,15 +5,29 @@
   "type": "module",
   "author": "Mike Thompson",
   "license": "MIT",
+  "private": "true",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.14.0"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.32.1",
+      "onFail": "ignore"
+    }
+  },
   "devDependencies": {
     "@mikeyt23/node-cli-utils": "^2.0.36",
-    "@types/node": "^20.14.12",
-    "dotenv": "^16.4.5",
-    "swig-cli": "^1.0.3",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.4"
+    "@types/node": "^24",
+    "dotenv": "^17.3.1",
+    "swig-cli": "^1.0.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
-  "volta": {
-    "node": "20.16.0"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
