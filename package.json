@@ -1,6 +1,5 @@
 {
   "name": "db-migrations-dotnet",
-  "version": "0.0.1",
   "description": "This top-level npm package is solely for dev workflow commands for the db-migrations-dotnet project (see swigfile.ts).",
   "type": "module",
   "author": "Mike Thompson",

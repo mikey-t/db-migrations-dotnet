@@ -1,23 +1,31 @@
 {
   "name": "example-sqlserver",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "volta": {
-    "node": "20.10.0"
-  },
+  "description": "Helper commands for managing a SQL Server example solution that utilizes the MikeyT.DbMigrations nuget package (see swigfile.ts)",
   "type": "module",
+  "author": "Mike Thompson",
+  "license": "MIT",
+  "private": true,
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.14.0"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.32.1",
+      "onFail": "ignore"
+    }
+  },
   "devDependencies": {
-    "@types/node": "^20.10.4",
-    "swig-cli": "^0.0.16",
-    "swig-cli-modules": "^0.3.2",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.3"
+    "@types/node": "^24",
+    "swig-cli": "^1.0.5",
+    "swig-cli-modules": "^0.3.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

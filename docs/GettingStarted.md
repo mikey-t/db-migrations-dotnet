@@ -6,7 +6,7 @@ This document has getting started instructions. For more in-depth documentation,
 
 This project is completely cross-platform due to `dotnet` SDK/CLI and EntityFramework Core being cross-platform and should work on Windows, Mac and Linux. Before getting started, ensure you have the following:
 
-- NodeJS >= 18
+- NodeJS >= 24
 - Docker
 - .NET SDK version 8 (6 and 7 also supported with additional config value)
 
@@ -14,7 +14,7 @@ This project is completely cross-platform due to `dotnet` SDK/CLI and EntityFram
 
 > ℹ️ These instructions assume you have an existing .NET solution that you're adding migrations to, but note that you can start from scratch as well by simply creating a new directory and running commands from the new location.
 
-Follow these high level steps using the detailed instructions in subsequent sections:
+Overview of the steps you'll complete in upcoming sections:
 
 - Setup your project to be able to use the `swig-cli` npm package
 - Setup docker and start container(s)
@@ -26,9 +26,9 @@ Follow these high level steps using the detailed instructions in subsequent sect
 
 > ℹ️ If your project already has NodeJS support and an existing `package.json` file, you will need to taylor some of the specifics to your particular configuration. Swig supports any combination of project type (CJS or ESM via package.json `"type": "commonjs"` or `"type": "module"`) and any flavor of syntax, including Typescript. For more info, check out the swig-cli [Syntax Options Matrix](https://github.com/mikey-t/swig#swigfile-syntax-options-matrix).
 
-> ℹ️ Optional: install swig-cli globally so you can use `swig` instead of `npx swig` to run swig tasks: `npm i -g swig-cli@latest`
+> ℹ️ Optional: install swig-cli globally so you can use `swig` instead of `npx swig` to run swig tasks: `npm i -g swig-cli@latest` (or with whatever other method you prefer to install global packages).
 
-> ℹ️ These instructions assume you're using NodeJS version 18.
+> ℹ️ These instructions assume you're using NodeJS version 24.
 
 Example steps to setup a project with NodeJS support and a Typescript swigfile:
 
@@ -36,13 +36,20 @@ Example steps to setup a project with NodeJS support and a Typescript swigfile:
   ```
   npm init -y
   ```
-- *(optional - if using [Volta](https://docs.volta.sh/guide/getting-started))* Pin NodeJS to version 18:
+- Update the package.json to be ESM by running command:
+  ```bash
+  npm pkg set type="module"
   ```
-  volta pin node@18
-  ```
-- Update the package.json to be ESM:
-  ```
-  "type": "module"
+- *(optional steps, utilize package.json devEngines field for node version and to assign pnpm as the preferred package manager)* :
+  ```bash
+  # Pin node version, in this case 24
+  npm pkg set devEngines.runtime.name="node" devEngines.runtime.version="^24"
+  
+  # Set pnpm as the packageManager to be used
+  npm pkg set devEngines.packageManager.name="pnpm" devEngines.packageManager.version="^10.32.1" devEngines.packageManager.onFail="ignore"
+  
+  # Add package.json snippet for pnpm to ignore esbuild post-install script that copies binary
+  npm pkg set pnpm.onlyBuiltDependencies[]=esbuild
   ```
 - Add a basic `tsconfig.json` file:
   ```json
@@ -74,7 +81,7 @@ Example steps to setup a project with NodeJS support and a Typescript swigfile:
   ```
 - Add NodeJS dev dependencies:
   ```
-  npm i -D typescript tsx swig-cli swig-cli-modules @types/node@18
+  npm i -D typescript tsx swig-cli swig-cli-modules @types/node@24
   ```
 - Create a new file at the root of the project called `swigfile.ts`
 - Add a "hello world" task to `swigfile.ts`:
