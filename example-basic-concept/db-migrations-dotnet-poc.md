@@ -47,7 +47,7 @@ Steps to set this project up from scratch:
   - `dotnet add package Microsoft.EntityFrameworkCore.Design`
   - `dotnet add package Microsoft.EntityFrameworkCore`
   - `dotnet add package Microsoft.EntityFrameworkCore.SqlServer`
-- Create a `docker-compose.yml` file in the root of your project and copy the contents of this project's docker compose file
+- Create a docker `compose.yaml` file in the root of your project and copy the contents of this project's docker compose file
 - Create a file called `MyDbContext.cs` in your console project directory and copy the contents of this project's version (don't forget to change the namespace statement)
 - Start docker sql server instance in detached mode by running this in your project's root directory: `docker compose up -d`
 - Verify your container is running:

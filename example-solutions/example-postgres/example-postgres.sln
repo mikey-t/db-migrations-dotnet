@@ -7,12 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{49BFA41A-D44
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C488809C-1685-4CB0-974C-20BFFCB51867}"
 	ProjectSection(SolutionItems) = preProject
-		docker\docker-compose.yml = docker\docker-compose.yml
 		.env = .env
 		.env.template = .env.template
-		docker\.env = docker\.env
 		example-postgres.sln = example-postgres.sln
-		gulpfile.js = gulpfile.js
 		LICENSE = LICENSE
 		package.json = package.json
 		.gitignore = .gitignore

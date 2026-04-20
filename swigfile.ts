@@ -1,5 +1,5 @@
 import { Emoji, SpawnResult, emptyDirectory, getRequiredEnvVar, log, requireValidPath, spawnAsync, spawnAsyncLongRunning, which } from '@mikeyt23/node-cli-utils'
-import { dotnetBuild, ensureReportGeneratorTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
+import { dotnetBuild, ensureDotnetTool, ensureReportGeneratorTool } from '@mikeyt23/node-cli-utils/dotnetUtils'
 import 'dotenv/config'
 import fs from 'node:fs'
 import fsp, { readdir } from 'node:fs/promises'
@@ -18,6 +18,7 @@ const exampleSolutionNames = [
   // 'example-sqlserver'
 ]
 const exampleSolutionDirs = exampleSolutionNames.map(exampleName => path.join(examplesBaseDir, exampleName))
+const reportGeneratorToolName = 'dotnet-reportgenerator-globaltool'
 
 export const packOnly = series(buildDbMigrations, packDbMigrations)
 
@@ -30,14 +31,14 @@ export const publish = series(
   nugetPublishDbMigrations
 )
 
-// Decorate tests with the following attribute for "only" functionality:
-// [Trait("Category", "only")]
+// Decorate tests with the following attribute for "only" functionality: [Trait("Category", "only")]
+// Report generation requires "dotnet tool restore" before first run on a new machine
 export async function test(withCoverageReportOverride = false) {
   await deleteTestCoverage()
 
   const verboseFlags = oneOfArgsPassed('verbose', 'v') ? ['--logger', 'console;verbosity=detailed'] : []
   const onlyFlags = oneOfArgsPassed('only', 'o') ? ['--filter', 'Category=only'] : []
-  const coverageArgs = oneOfArgsPassed('coverage', 'c') || withCoverageReportOverride ? ['--collect:"XPlat Code Coverage"'] : []
+  const coverageArgs = oneOfArgsPassed('coverage', 'c') || withCoverageReportOverride ? ['--collect:XPlat Code Coverage'] : []
 
   let result: SpawnResult
   if (oneOfArgsPassed('watch', 'w')) {
@@ -91,10 +92,6 @@ export async function exampleParseNames() {
   }
 
   await fsp.writeFile('./example-resources/LastNames.txt', lastNames.join('\n'))
-}
-
-export async function installTestReportGenerator() {
-  await ensureReportGeneratorTool()
 }
 
 export async function cleanProject() {
@@ -165,11 +162,6 @@ async function getFullPackageNameWithVersion(projectPath: string, csprojFilename
 }
 
 async function genTestCoverageReport() {
-  const reportGenToolName = 'reportgenerator'
-  if (!(await which(reportGenToolName)).location) {
-    throw new Error(`The global dotnet tool "${reportGenToolName}" is not installed - try running "swig installTestReportGenerator"`)
-  }
-
   const testResultSubdirectories = (await readdir(testResultsDir)).filter(dirent => fs.lstatSync(path.join(testResultsDir, dirent)).isDirectory())
   if (testResultSubdirectories.length !== 1) {
     throw new Error(`Expected exactly one directory in the test results directory (${testResultsDir}), but found ${testResultSubdirectories.length} directories - cannot generate report`)
@@ -187,12 +179,13 @@ async function genTestCoverageReport() {
 
   // Paths are required to be absolute or "explicitly" a relative path (prefixed with './')
   const reportArgs = [
+    'reportgenerator',
     `-reports:${xmlCoverageFilePath}`,
     `-targetdir:"${testCoverageAbsolutePath}"`,
     '-reporttypes:Html'
   ]
 
-  await spawnAsync(reportGenToolName, reportArgs, { cwd: testProjectPath })
+  await spawnAsync('dotnet', reportArgs, { cwd: testProjectPath })
 
   log(`${Emoji.Info} Report generated at ${(pathToFileURL(path.join(testCoverageAbsolutePath, 'index.html')))}`)
 }

@@ -15,10 +15,11 @@ Commands:
   setup       Creates the database and roles for the specified DbContext classes.
   teardown    Drops the database and roles for the specified DbContext classes.
   list        List DbContext classes in project along with DbSetup types they use.
-  bootstrap   Unlike other commands, pass a single DbContext class name and the name of the
-              DbSetup class implementation for the database type you want. For this command
-              the class names should be the full case sensitive names of the classes. The current
-              working directory must be the project directory containing the Migrations project.
+  bootstrap   Bootstraps a new DbContext class. Unlike other commands, pass a single DbContext
+              class name and the name of the DbSetup class implementation for the database type
+              you want. For this command the class names should be the full case sensitive names
+              of the classes. The current working directory must be the project directory
+              containing the Migrations project.
   help        Displays this help message.
 
 Options:

@@ -6,9 +6,11 @@ import { series } from 'swig-cli'
 import efConfig from 'swig-cli-modules/ConfigEntityFramework'
 import { dockerDown, dockerUp } from 'swig-cli-modules/DockerCompose'
 import { dbBootstrapMigrationsProject, dbSetup } from 'swig-cli-modules/EntityFramework'
+import dockerComposeConfig from 'swig-cli-modules/ConfigDockerCompose'
 
 const exampleApiPath = 'src/ExampleApiWrapper'
 const dbMigrationsProjectPath = 'src/DbMigrations'
+dockerComposeConfig.dockerComposePath = './compose.yaml'
 
 // Simple example with one DbContext. See README.md before switching example config.
 efConfig.init(dbMigrationsProjectPath, [

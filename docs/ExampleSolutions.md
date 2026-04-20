@@ -128,7 +128,7 @@ This would allow you to have a unit test project that points to a test version o
 
 ### Try bootstrapping a whole new DbMigrations project
 
-In a new .NET project without database migrations, try bootstrapping a DB migrations project using the `dbBootstrapMigrationsProject` swig task - see [GettingStarted](./GettingStarted.md) for details.
+In a new .NET project without database migrations, try bootstrapping a DB migrations project using the `dbBootstrapMigrationsProject` swig task - see [GettingStarted](./DbMigrationsDotnet.md#getting-started) for details.
 
 ## How To Create a New Example Solution
 
@@ -150,8 +150,8 @@ New example solution setup steps:
 - Create a new directory under `example-solutions`
 - Create a src dir for an API project and the DbMigrations project: `mkdir src`
 - Create a dotnet solution file from that new solution's root directory: `dotnet new sln`
-- Follow all the [GettingStarted](./GettingStarted.md) instructions for setting up the root solution directory
-- Replace the `docker-compose.yml` with a version appropriate for your new DB engine
+- Follow all the [GettingStarted](./DbMigrationsDotnet.md#getting-started) instructions for setting up the root solution directory
+- Replace the docker `compose.yaml` file with a version appropriate for your new DB engine
 - Copy the contents of the `example-postgres` solution's `swigfile.ts` into the new solution directory and replace the `dbSetupType` value in your config for the EF swig module in your - replace `PostgresSetup` with your new implementation class name
 - Create a `.env.template` file in the root of the new solution that has the environment values necessary for your `DbSettings` implementation
 - Create an empty dotnet web project: `dotnet new web -o ./src/ExampleApiWrapper`

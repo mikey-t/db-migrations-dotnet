@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		LICENSE = LICENSE
 		README.md = README.md
 		package.json = package.json
-		gulpfile.js = gulpfile.js
 		.env = .env
 		.env.template = .env.template
 	EndProjectSection

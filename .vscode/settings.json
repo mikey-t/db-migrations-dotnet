@@ -17,6 +17,7 @@
         "datdba",
         "datname",
         "dbmigrationsexample",
+        "globaltool",
         "msdb",
         "NOCREATEDB",
         "NOCREATEROLE",

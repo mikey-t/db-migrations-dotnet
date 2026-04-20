@@ -7,7 +7,7 @@ The following clip demonstrates setting up a brand new project that will be util
 - Create new directory for project
 - Initialize [swig-cli](https://github.com/mikey-t/swig) dev task orchestration tool for project
 - Verify swig is working
-- Add `docker-compose.yml` file - PostgreSQL is used for this example
+- Add docker `compose.yaml` file - PostgreSQL is used for this example
 - Add `.env` file with credentials for DB access
 - Update `swigfile.ts` to re-export methods for the DockerCompose module from the referenced npm package [swig-cli-modules](https://github.com/mikey-t/swig-cli-modules)
 - Run new swig task `dockerUp` to start PostgreSQL docker container
@@ -24,7 +24,7 @@ The following clip demonstrates setting up a brand new project that will be util
 
 ![db-migrations-dotnet project setup demo](./images/DbMigrationsDotnetDemo_ProjectSetup01.gif)
 
-See [./GettingStarted.md](./GettingStarted.md) for detailed instructions.
+See [Getting Started](./DbMigrationsDotnet.md#getting-started) for detailed instructions.
 
 ## Add Initial Migration
 
@@ -88,7 +88,7 @@ The following clip demonstrates deploying the Entity Framework bundle generated 
 
 - Setup a mock production database (note that mock database setup is for demo purposes only - normally this would be setup in your deployment environment by some other means):
   - Create a directory `acme-prod-mock`
-  - Copy `docker-compose.yml` as-is to the new directory
+  - Copy docker `compose.yaml` as-is to the new directory
   - Copy `.env` to the new directory and change the port from `5432` to `5431` so both databases can be running at the same time
   - Add some demo-only snippets to `swigfile.ts` to interact with the mock production database
   - Start the new containerized database

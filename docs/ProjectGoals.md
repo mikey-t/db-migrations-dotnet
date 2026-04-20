@@ -36,8 +36,12 @@ Using this project's approach, you can easily manage 2 instances of your databas
 
 Containerization is a popular tool for deploying applications in cloud environments, but it's also extremely useful to abstract project dependencies so they're cross-platform and easy to setup for each new developer that would like to setup your project on their dev machine.
 
-Instead of dealing with everyone managing their own copy of database server software or shared dev instances (yuck!), all you need is a docker-compose.yml file and a tiny bit of scripting so people accessing your project don't have to be a docker expert. All they need to do when pulling down you project is to run `npm install` and `swig dockerUp`. They can also easily set different ports to use by simply modifying a .env file, which is especially useful if you frequently jump between many projects that might also be using the same database engine and expecting it to be on the same default port.
+Instead of dealing with everyone managing their own copy of database server software or shared dev instances (yuck!), all you need is a docker `compose.yaml` file and a tiny bit of scripting so people accessing your project don't have to be a docker expert. All they need to do when pulling down you project is to run `npm install` and `swig dockerUp`. They can also easily set different ports to use by simply modifying a .env file, which is especially useful if you frequently jump between many projects that might also be using the same database engine and expecting it to be on the same default port.
 
 ### Goal: Showcase developer task automation with [swig-cli](https://github.com/mikey-t/swig)
 
 [Swig-cli](https://github.com/mikey-t/swig) is similar to Gulp.js. It provides ultra-fast dev task automation by allowing you to simply write a function in your "swigfile" and execute it from a terminal by simply specifying the name of your function. The library provides `series` and `parallel` methods to allow you to chain things together, and by "things", it's literally just functions. You don't have to learn any new language or framework. If you know even basic javascript, you already know how to use swig. Swig supports both CommonJS and ESM, in addition to Typescript!
+
+### Goal: Production Migration Deployment
+
+Utilize EF's bundle creation functionality to generate executables ready for production database updates.

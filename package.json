@@ -17,12 +17,12 @@
     }
   },
   "devDependencies": {
-    "@mikeyt23/node-cli-utils": "^2.0.36",
+    "@mikeyt23/node-cli-utils": "^2.1.1",
     "@types/node": "^24",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.1",
     "swig-cli": "^1.0.5",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
